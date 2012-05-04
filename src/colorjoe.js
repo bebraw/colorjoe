@@ -5,9 +5,8 @@
 return function(o) {
   o.cbs = o.cbs || {};
   
-  // XXX: works only with element id now
-  // TODO: make work with regular elements too!
-  var picker = document.getElementById(o.element);
+  var picker = o.element;
+  if(utils.isString(o.element)) picker = document.getElementById(o.element);
   
   if(picker) return setup(picker, o.initialColor, o.cbs.change);
 
