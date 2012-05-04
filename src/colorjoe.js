@@ -8,11 +8,9 @@ return function(o) {
   var picker = o.element;
   if(utils.isString(o.element)) picker = document.getElementById(o.element);
   
-  if(picker) return setup(picker, o.initialColor, o.cbs.change);
+  if(picker) return setup(picker, o.initialColor);
 
-  function setup(picker, col, chg) {
-    chg = chg || function() {};
-
+  function setup(picker, col) {
     var hsv = color.hsva(col);
     
     picker.className = 'colorPicker';
@@ -33,15 +31,15 @@ return function(o) {
     drag(oned, function(p) {
       hsv.h(p.y);
       H(p.y);
-      chg(hsv);
-    });
+      changed(hsv);
+    }, done);
     
     drag(twod, function(p) {
       hsv.s(p.x);
       hsv.v(1 - p.y);
       SV(p.x, p.y);
-      chg(hsv);
-    });
+      changed(hsv);
+    }, done);
 
     H(hsv.h());
     SV(hsv.s(), hsv.v());
@@ -55,11 +53,25 @@ return function(o) {
       p1.style.left = utils.clamp(s * 100, 0, 100) + '%';
       p1.style.top = utils.clamp(v * 100, 0, 100) + '%'; 
     }
-    
-    return {
+
+    var changeListeners = [];
+    function changed() {
+      for(var i = 0, len = changeListeners.length; i < len; i++)
+        changeListeners[i](hsv);
+    }
+
+    var doneListeners = [];
+    function done() {
+      for(var i = 0, len = doneListeners.length; i < len; i++)
+        doneListeners[i](hsv);
+    }
+
+    var ob = {
       e: picker,
       update: function() {
-        chg(hsv);
+        changed(hsv);
+
+        return ob;
       },
       get: function() {
           return color.rgba(hsv);
@@ -68,12 +80,22 @@ return function(o) {
         hsv = c;
         H(c.h());
         SV(c.s(), c.v());
+
+        return ob;
+      },
+      on: function(evt, cb) {
+        if(evt == 'change') changeListeners.push(cb);
+        if(evt == 'done') doneListeners.push(cb);
+
+        return ob;
       }
     };
+
+    return ob;
   }
 };
 
-function drag(elem, fn) {
+function drag(elem, changeCb, doneCb) {
   var dragging = false;
   
   // http://stackoverflow.com/questions/4817029/whats-the-best-way-to-detect-a-touch-screen-device-using-javascript
@@ -83,16 +105,23 @@ function drag(elem, fn) {
     elem.ontouchstart = function(e) {
       e.preventDefault();
       dragging = true;
+
+      document.ontouchend = function() {
+        dragging = false;
+
+        document.ontouchend = '';
+        document.ontouchmove = '';
       
-      document.ontouchend = '';
-      document.ontouchmove = '';
+        callCb(doneCb, e);
+      };
       
-      callCb(e);
+      document.ontouchmove = utils.partial(callCb, changeCb);
     };
-    elem.ontouchmove = callCb;
     elem.ontouchend = function(e) {
       e.preventDefault();
       dragging = false;
+
+      callCb(doneCb, e);
     };
   }
   else {
@@ -105,19 +134,21 @@ function drag(elem, fn) {
         
         document.onmouseup = '';
         document.onmousemove = '';
+
+        callCb(doneCb, e);
       };
     
-      document.onmousemove = callCb;
+      document.onmousemove = utils.partial(callCb, changeCb);
     };
     elem.onmouseup = function(e) {
       e.preventDefault();
       dragging = false;
     
-      callCb(e);
+      callCb(doneCb, e);
     };
   }
   
-  function callCb(e) {
+  function callCb(cb, e) {
     e.preventDefault();
 
     var xOffset = elem.offsetLeft;
@@ -125,7 +156,7 @@ function drag(elem, fn) {
     var width = elem.clientWidth;
     var height = elem.clientHeight;
 
-    fn({x: (mouseX(e) - xOffset) / width, y: (mouseY(e) - yOffset) / height});
+    cb({x: (mouseX(e) - xOffset) / width, y: (mouseY(e) - yOffset) / height});
   }
 }
 

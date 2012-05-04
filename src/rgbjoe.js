@@ -3,16 +3,16 @@
   else root.rgbjoe = factory(root.utils);
 }(this, function(utils) {
 return function(e, initialColor) {
-   var joe = colorjoe({element: e, initialColor: initialColor, cbs: {
-    change: function(c) {
-      setBg(c);
-      var rgba = color.rgba(c);
-      r.input.value = Math.round(rgba.r() * 255);
-      g.input.value = Math.round(rgba.g() * 255);
-      b.input.value = Math.round(rgba.b() * 255);
-      hex.input.value = c.toHex();
+   var joe = colorjoe({element: e, initialColor: initialColor}).on('change',
+     function(c) {
+       setBg(c);
+       var rgba = color.rgba(c);
+       r.input.value = Math.round(rgba.r() * 255);
+       g.input.value = Math.round(rgba.g() * 255);
+       b.input.value = Math.round(rgba.b() * 255);
+       hex.input.value = c.toHex();
     }
-  }});
+  );
   
   var div = utils.partial(utils.e, 'div');
   
