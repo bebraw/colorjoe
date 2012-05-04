@@ -2,13 +2,11 @@
   if(typeof define === 'function' && define.amd) define(['./color'], factory);
   else root.colorjoe = factory(root.color);
 }(this, function(color) {
-var ret = function(o) {
-  o.cbs = o.cbs || {};
+var ret = function(element, initialColor) {
+  var picker = element;
+  if(isString(element)) picker = document.getElementById(element);
   
-  var picker = o.element;
-  if(isString(o.element)) picker = document.getElementById(o.element);
-  
-  if(picker) return setup(picker, o.initialColor);
+  if(picker) return setup(picker, initialColor);
 
   function setup(picker, col) {
     var hsv = color.hsva(col);

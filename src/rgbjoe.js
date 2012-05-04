@@ -3,7 +3,7 @@
   else root.rgbjoe = factory(root.colorjoe, root.color);
 }(this, function(colorjoe, color) {
 return function(e, initialColor) {
-  var joe = colorjoe({element: e, initialColor: initialColor}).on('change',
+  var joe = colorjoe(e, initialColor).on('change',
     function(c) {
       setBg(c);
       var rgba = color.rgba(c);
