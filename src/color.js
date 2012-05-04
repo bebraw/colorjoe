@@ -7,7 +7,7 @@
     }
     else if(typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
-        define(['colorutils'], factory);
+        define(['./colorutils'], factory);
     }
     else {
         // Browser globals
