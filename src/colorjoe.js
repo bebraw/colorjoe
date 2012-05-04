@@ -1,7 +1,7 @@
 (function(root, factory) {
-  if(typeof define === 'function' && define.amd) define(factory);
-  else root.colorjoe = factory();
-}(this, function() {
+  if(typeof define === 'function' && define.amd) define(['./color'], factory);
+  else root.colorjoe = factory(root.color);
+}(this, function(color) {
 var ret = function(o) {
   o.cbs = o.cbs || {};
   
