@@ -3,17 +3,17 @@
   else root.rgbjoe = factory(root.colorjoe, root.color);
 }(this, function(colorjoe, color) {
 return function(e, initialColor) {
-   var joe = colorjoe({element: e, initialColor: initialColor}).on('change',
-     function(c) {
-       setBg(c);
-       var rgba = color.rgba(c);
-       r.input.value = Math.round(rgba.r() * 255);
-       g.input.value = Math.round(rgba.g() * 255);
-       b.input.value = Math.round(rgba.b() * 255);
-       hex.input.value = c.toHex();
+  var joe = colorjoe({element: e, initialColor: initialColor}).on('change',
+    function(c) {
+      setBg(c);
+      var rgba = color.rgba(c);
+      r.input.value = Math.round(rgba.r() * 255);
+      g.input.value = Math.round(rgba.g() * 255);
+      b.input.value = Math.round(rgba.b() * 255);
+      hex.input.value = c.toHex();
     }
   );
-  
+
   var div = colorjoe.partial(colorjoe.e, 'div');
   
   var extras = div('extras', joe.e);
@@ -82,5 +82,7 @@ return function(e, initialColor) {
 
     return e;
   }
+
+  return joe;
 };
 }));
