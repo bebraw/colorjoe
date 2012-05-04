@@ -6,6 +6,7 @@ return function(o) {
   o.cbs = o.cbs || {};
   
   // XXX: works only with element id now
+  // TODO: make work with regular elements too!
   var picker = document.getElementById(o.element);
   
   if(picker) return setup(picker, o.initialColor, o.cbs.change);
@@ -60,6 +61,9 @@ return function(o) {
       e: picker,
       update: function() {
         chg(hsv);
+      },
+      get: function() {
+          return color.rgba(hsv);
       },
       set: function(c) {
         hsv = c;
