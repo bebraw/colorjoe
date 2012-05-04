@@ -17,6 +17,7 @@ return function(o) {
     
     picker.className = 'colorPicker';
   
+    var div = utils.partial(utils.e, 'div');
     var twod = div('twod', picker);
     var p1 = div('pointer', twod);
     div('shape shape1', p1);
@@ -68,14 +69,6 @@ return function(o) {
     };
   }
 };
-
-function div(klass, p) {
-  var elem = document.createElement('div');
-  elem.className = klass;
-  p.appendChild(elem);
-
-  return elem;
-}
 
 function drag(elem, fn) {
   var dragging = false;

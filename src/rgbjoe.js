@@ -14,6 +14,8 @@ return function(e, initialColor) {
     }
   }});
   
+  var div = utils.partial(utils.e, 'div');
+  
   var extras = div('extras', joe.e);
   var curColor = div('currentColor', extras);
   var rgb = div('rgb', extras);
@@ -57,39 +59,28 @@ return function(e, initialColor) {
   function setBg(c) {
     curColor.style.background = c.toCSS();
   }
+
+  function labelInput(klass, n, p, maxLen) {
+    var d = div(klass, p); 
+    var l = label(n, d); 
+    var i = input('text', d, maxLen);
+
+    return {label: l, input: i}; 
+  }
+
+  function label(c, p) {
+    var e = utils.e('label', '', p);
+    e.innerHTML = c;
+
+    return e;
+  }
+
+  function input(t, p, maxLen) {
+    var e = utils.e('input', '', p);
+    e.type = t;
+    if(maxLen) e.maxLength = maxLen;
+
+    return e;
+  }
 };
-
-function labelInput(klass, n, p, maxLen) {
-  var d = div(klass, p); 
-  var l = label(n, d); 
-  var i = input('text', d, maxLen);
-  
-  return {label: l, input: i}; 
-}
-
-function label(c, p) {
-  var e = document.createElement('label');
-  e.innerHTML = c;
-  p.appendChild(e);
-  
-  return e;
-}
-
-function input(t, p, maxLen) {
-  var e = document.createElement('input');
-  e.type = t;
-  if(maxLen) e.maxLength = maxLen;
-  p.appendChild(e);
-
-  return e;
-}
-
-// TODO: move to utils
-function div(klass, p) {
-  var elem = document.createElement('div');
-  elem.className = klass;
-  p.appendChild(elem);
-
-  return elem;
-}
 }));
