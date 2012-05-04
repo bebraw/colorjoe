@@ -1,7 +1,7 @@
 (function(root, factory) {
-  if(typeof define === 'function' && define.amd) define(['utils'], factory);
-  else root.rgbjoe = factory(root.utils);
-}(this, function(utils) {
+  if(typeof define === 'function' && define.amd) define(factory);
+  else root.rgbjoe = factory();
+}(this, function() {
 return function(e, initialColor) {
    var joe = colorjoe({element: e, initialColor: initialColor}).on('change',
      function(c) {
@@ -14,7 +14,7 @@ return function(e, initialColor) {
     }
   );
   
-  var div = utils.partial(utils.e, 'div');
+  var div = colorjoe.partial(colorjoe.e, 'div');
   
   var extras = div('extras', joe.e);
   var curColor = div('currentColor', extras);
@@ -69,14 +69,14 @@ return function(e, initialColor) {
   }
 
   function label(c, p) {
-    var e = utils.e('label', '', p);
+    var e = colorjoe.e('label', '', p);
     e.innerHTML = c;
 
     return e;
   }
 
   function input(t, p, maxLen) {
-    var e = utils.e('input', '', p);
+    var e = colorjoe.e('input', '', p);
     e.type = t;
     if(maxLen) e.maxLength = maxLen;
 

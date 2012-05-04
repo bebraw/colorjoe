@@ -1,12 +1,12 @@
 (function(root, factory) {
-  if(typeof define === 'function' && define.amd) define(['utils'], factory);
-  else root.colorjoe = factory(root.utils);
-}(this, function(utils) {
-return function(o) {
+  if(typeof define === 'function' && define.amd) define(factory);
+  else root.colorjoe = factory();
+}(this, function() {
+var ret = function(o) {
   o.cbs = o.cbs || {};
   
   var picker = o.element;
-  if(utils.isString(o.element)) picker = document.getElementById(o.element);
+  if(isString(o.element)) picker = document.getElementById(o.element);
   
   if(picker) return setup(picker, o.initialColor);
 
@@ -15,7 +15,7 @@ return function(o) {
     
     picker.className = 'colorPicker';
   
-    var div = utils.partial(utils.e, 'div');
+    var div = partial(e, 'div');
     var twod = div('twod', picker);
     var p1 = div('pointer', twod);
     div('shape shape1', p1);
@@ -45,13 +45,13 @@ return function(o) {
     SV(hsv.s(), hsv.v());
 
     function H(h) {
-      p2.style.top = utils.clamp(h * 100, 0, 100) + '%';
+      p2.style.top = clamp(h * 100, 0, 100) + '%';
       twod.style.background = color.hsva({h: h, s: 1, v: 1}).toCSS();    
     }
 
     function SV(s, v) {
-      p1.style.left = utils.clamp(s * 100, 0, 100) + '%';
-      p1.style.top = utils.clamp(v * 100, 0, 100) + '%'; 
+      p1.style.left = clamp(s * 100, 0, 100) + '%';
+      p1.style.top = clamp(v * 100, 0, 100) + '%'; 
     }
 
     var changeListeners = [];
@@ -95,6 +95,38 @@ return function(o) {
   }
 };
 
+// helpers needed by rgbjoe
+ret.partial = partial;
+ret.e = e;
+
+return ret;
+
+function clamp(a, minValue, maxValue) {
+  return Math.min(Math.max(a, minValue), maxValue);
+}
+
+function isString(o) {
+  return typeof(o) === 'string';
+}
+
+function e(type, klass, p) {
+  var elem = document.createElement(type);
+  elem.className = klass;
+  p.appendChild(elem);
+
+  return elem;
+}
+
+// http://stackoverflow.com/questions/4394747/javascript-curry-function
+function partial(fn) {
+  var slice = Array.prototype.slice;
+  var args = slice.apply(arguments, [1]);
+
+  return function() {
+    return fn.apply(null, args.concat(slice.apply(arguments)));
+  };
+}
+
 function drag(elem, changeCb, doneCb) {
   var dragging = false;
   
@@ -115,7 +147,7 @@ function drag(elem, changeCb, doneCb) {
         callCb(doneCb, e);
       };
       
-      document.ontouchmove = utils.partial(callCb, changeCb);
+      document.ontouchmove = partial(callCb, changeCb);
     };
     elem.ontouchend = function(e) {
       e.preventDefault();
@@ -138,7 +170,7 @@ function drag(elem, changeCb, doneCb) {
         callCb(doneCb, e);
       };
     
-      document.onmousemove = utils.partial(callCb, changeCb);
+      document.onmousemove = partial(callCb, changeCb);
     };
     elem.onmouseup = function(e) {
       e.preventDefault();
