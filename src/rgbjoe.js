@@ -1,7 +1,7 @@
 (function(root, factory) {
-  if(typeof define === 'function' && define.amd) define([], factory);
-  else root.rgbjoe = factory();
-}(this, function() {
+  if(typeof define === 'function' && define.amd) define(['utils'], factory);
+  else root.rgbjoe = factory(root.utils);
+}(this, function(utils) {
 return function(e, initialColor) {
    var joe = colorjoe({element: e, initialColor: initialColor, cbs: {
     change: function(c) {
