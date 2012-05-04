@@ -181,13 +181,27 @@ function drag(elem, changeCb, doneCb) {
   function callCb(cb, e) {
     e.preventDefault();
 
-    var xOffset = elem.offsetLeft;
-    var yOffset = elem.offsetTop;
+    var offset = findPos(elem);
     var width = elem.clientWidth;
     var height = elem.clientHeight;
 
-    cb({x: (mouseX(e) - xOffset) / width, y: (mouseY(e) - yOffset) / height});
+    cb({x: (mouseX(e) - offset.x) / width, y: (mouseY(e) - offset.y) / height});
   }
+}
+
+// http://www.quirksmode.org/js/findpos.html
+function findPos(e) {
+  var x = 0;
+  var y = 0;
+
+  if(e.offsetParent) {
+    do {
+      x += e.offsetLeft;
+      y += e.offsetTop;
+    } while (e = e.offsetParent);
+  }
+  
+  return {x: x, y: y}; 
 }
 
 // http://javascript.about.com/library/blmousepos.htm
