@@ -1,4 +1,8 @@
-function colorjoe(o) {
+(function(root, factory) {
+  if(typeof define === 'function' && define.amd) define([], factory);
+  else root.colorjoe = factory();
+}(this, function() {
+return function(o) {
   o.cbs = o.cbs || {};
   
   // XXX: works only with element id now
@@ -63,7 +67,7 @@ function colorjoe(o) {
       }
     };
   }
-}
+};
 
 function div(klass, p) {
   var elem = document.createElement('div');
@@ -144,4 +148,4 @@ function mouseY(evt) {
       document.documentElement.scrollTop :
       document.body.scrollTop);
 }
-
+}));
