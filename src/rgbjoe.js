@@ -54,6 +54,7 @@ return function(e, initialColor) {
 
     joe.set(hsva);
     setBg(hsva);
+    hex.input.value = hsva.toHex();
   }
   
   function setBg(c) {
