@@ -1,18 +1,19 @@
 (function(root, factory) {
-  if(typeof define === 'function' && define.amd) define(['./color'], factory);
-  else root.colorjoe = factory(root.color);
-}(this, function(color) {
+  if(typeof define === 'function' && define.amd)
+    define(['./color', './drag'], factory);
+  else root.colorjoe = factory(root.color, root.drag);
+}(this, function(color, drag) {
 var ret = function(element, initialColor) {
   var picker = element;
   if(isString(element)) picker = document.getElementById(element);
-  
+
   if(picker) return setup(picker, initialColor);
 
   function setup(picker, col) {
     var hsv = color.hsva(col);
-    
+
     picker.className = 'colorPicker';
-  
+
     var div = partial(e, 'div');
     var twod = div('twod', picker);
     var p1 = div('pointer', twod);
@@ -20,24 +21,30 @@ var ret = function(element, initialColor) {
     div('shape shape2', p1);
     div('bg bg1', twod);
     div('bg bg2', twod);
-  
+
     var oned = div('oned', picker);
     var p2 = div('pointer', oned);
     div('shape', p2);
     div('bg', oned);
 
-    drag(oned, function(p) {
-      hsv.h(p.y);
-      H(p.y);
-      changed(hsv);
-    }, done);
-    
-    drag(twod, function(p) {
-      hsv.s(p.x);
-      hsv.v(1 - p.y);
-      SV(p.x, p.y);
-      changed(hsv);
-    }, done);
+    drag(oned, {
+      change: function(p) {
+        hsv.h(p.y);
+        H(p.y);
+        changed(hsv);
+      },
+      end: done
+    });
+
+    drag(twod, {
+      change: function(p) {
+        hsv.s(p.x);
+        hsv.v(1 - p.y);
+        SV(p.x, p.y);
+        changed(hsv);
+      },
+      end: done
+    });
 
     H(hsv.h());
     SV(hsv.s(), hsv.v());
@@ -123,100 +130,5 @@ function partial(fn) {
   return function() {
     return fn.apply(null, args.concat(slice.apply(arguments)));
   };
-}
-
-function drag(elem, changeCb, doneCb) {
-  var dragging = false;
-  
-  // http://stackoverflow.com/questions/4817029/whats-the-best-way-to-detect-a-touch-screen-device-using-javascript
-  var isTouch = typeof(window.ontouchstart) != 'undefined';
-  
-  if(isTouch) {
-    elem.ontouchstart = function(e) {
-      e.preventDefault();
-      dragging = true;
-
-      document.ontouchend = function() {
-        dragging = false;
-
-        document.ontouchend = '';
-        document.ontouchmove = '';
-      
-        callCb(doneCb, e);
-      };
-      
-      document.ontouchmove = partial(callCb, changeCb);
-    };
-    elem.ontouchend = function(e) {
-      e.preventDefault();
-      dragging = false;
-
-      callCb(doneCb, e);
-    };
-  }
-  else {
-    elem.onmousedown = function(e) {
-      e.preventDefault();
-      dragging = true;
-    
-      document.onmouseup = function() {
-        dragging = false;
-        
-        document.onmouseup = '';
-        document.onmousemove = '';
-
-        callCb(doneCb, e);
-      };
-    
-      document.onmousemove = partial(callCb, changeCb);
-    };
-    elem.onmouseup = function(e) {
-      e.preventDefault();
-      dragging = false;
-    
-      callCb(doneCb, e);
-    };
-  }
-  
-  function callCb(cb, e) {
-    e.preventDefault();
-
-    var offset = findPos(elem);
-    var width = elem.clientWidth;
-    var height = elem.clientHeight;
-
-    cb({x: (mouseX(e) - offset.x) / width, y: (mouseY(e) - offset.y) / height});
-  }
-}
-
-// http://www.quirksmode.org/js/findpos.html
-function findPos(e) {
-  var x = 0;
-  var y = 0;
-
-  if(e.offsetParent) {
-    do {
-      x += e.offsetLeft;
-      y += e.offsetTop;
-    } while (e = e.offsetParent);
-  }
-  
-  return {x: x, y: y}; 
-}
-
-// http://javascript.about.com/library/blmousepos.htm
-function mouseX(evt) {
-  if(evt.pageX) return evt.pageX;
-  else if(evt.clientX)
-    return evt.clientX + (document.documentElement.scrollLeft ?
-      document.documentElement.scrollLeft :
-      document.body.scrollLeft);
-}
-function mouseY(evt) {
-  if(evt.pageY) return evt.pageY;
-  else if(evt.clientY)
-    return evt.clientY + (document.documentElement.scrollTop ?
-      document.documentElement.scrollTop :
-      document.body.scrollTop);
 }
 }));
