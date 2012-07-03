@@ -1,12 +1,22 @@
-<!DOCTYPE html>
 <html>
-<head>
-  <meta name="viewport" content="user-scalable=1.0,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="format-detection" content="telephone=no">
-  <meta charset=utf-8 />
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
 
-  <link rel="stylesheet" type="text/css" href="css/demo.css" />
+    <meta name="description" content="Scaleable color picker.">
+    <meta name="author" content="Juho Vepsäläinen">
+
+    <title>colorjoe by bebraw</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/pygment_trac.css">
+    <link rel="stylesheet" href="css/demo.css">
+    <script src="js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
 
   <script src="src/drag.js"></script>
   <script src="src/colorutils.js"></script>
@@ -14,22 +24,48 @@
   <script src="src/colorjoe.js"></script>
   <script src="src/rgbjoe.js"></script>
   <script type="text/javascript">
-    window.onload = function() {
+  window.onload = function() {
       colorjoe('regularPicker', 'red');
       rgbjoe('rgbPicker', 'green');
-    }
+  }
   </script>
-  
-  <title>Colorjoe demo</title>
-  <!--[if IE]>
-    <script
-    src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>script>
-  <![endif]-->
-</head>
-<body>
-  <h2>Regular Picker</h2>
-  <div id="regularPicker"></div>
-  <h2>RGB Picker</h2>
-  <div id="rgbPicker"></div>
-</body>
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>colorjoe</h1>
+        <p>Scaleable color picker (MIT).</p>
+        <p class="view"><a href="https://github.com/bebraw/colorjoe">View the Project on GitHub <small>bebraw/colorjoe</small></a></p>
+        <ul>
+          <li><a href="https://github.com/bebraw/colorjoe/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/bebraw/colorjoe/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/bebraw/colorjoe">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+      <h1>colorjoe - Scaleable color picker</h1>
+
+      <p>Unlike many other colorpickers out there, colorjoe is truly scaleable.
+      It is based on CSS and does not depend on external images. As a result,
+      you can tweak its size to fit your purposes. Supports touch and AMD
+      module definition as well.</p>
+      </section>
+      <section>
+
+    <h2>Regular Picker</h2>
+
+    <div id="regularPicker"></div>
+
+    <h2>RGB Picker</h2>
+
+    <div id="rgbPicker"></div>
+
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/bebraw">bebraw</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+  </body>
 </html>
