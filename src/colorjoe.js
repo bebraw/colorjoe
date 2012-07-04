@@ -28,23 +28,29 @@ var ret = function(element, initialColor) {
     div('bg', oned);
 
     drag(oned, {
-      change: function(p) {
-        hsv.h(p.y);
-        H(p.y);
-        changed(hsv);
-      },
+      begin: changeHS,
+      change: changeHS,
       end: done
     });
 
+    function changeHS(p) {
+      hsv.h(p.y);
+      H(p.y);
+      changed(hsv);
+    }
+
     drag(twod, {
-      change: function(p) {
-        hsv.s(p.x);
-        hsv.v(1 - p.y);
-        SV(p.x, p.y);
-        changed(hsv);
-      },
+      begin: changeS,
+      change: changeS,
       end: done
     });
+
+    function changeS(p) {
+      hsv.s(p.x);
+      hsv.v(1 - p.y);
+      SV(p.x, p.y);
+      changed(hsv);
+    }
 
     H(hsv.h());
     SV(hsv.s(), hsv.v());
