@@ -40,7 +40,7 @@ joe.on("change", function(color) {
 joe.on("done", function(color) {
     console.log("Selected " + color.toCSS());
 });
-``
+```
 
 The color object is from [colorjs](http://bebraw.github.com/colorjs/).
 
