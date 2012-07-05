@@ -53,6 +53,7 @@ var ret = function(element, initialColor) {
     }
 
     H(hsv.h());
+
     SV(hsv.s(), 1 - hsv.v());
 
     function H(h) {

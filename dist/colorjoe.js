@@ -841,24 +841,24 @@ var ret = function(element, initialColor) {
     div('bg', oned);
 
     drag(oned, {
-      begin: changeHS,
-      change: changeHS,
+      begin: changeH,
+      change: changeH,
       end: done
     });
 
-    function changeHS(p) {
+    function changeH(p) {
       hsv.h(p.y);
       H(p.y);
       changed(hsv);
     }
 
     drag(twod, {
-      begin: changeS,
-      change: changeS,
+      begin: changeSV,
+      change: changeSV,
       end: done
     });
 
-    function changeS(p) {
+    function changeSV(p) {
       hsv.s(p.x);
       hsv.v(1 - p.y);
       SV(p.x, p.y);
@@ -866,7 +866,8 @@ var ret = function(element, initialColor) {
     }
 
     H(hsv.h());
-    SV(hsv.s(), hsv.v());
+
+    SV(hsv.s(), 1 - hsv.v());
 
     function H(h) {
       p2.style.top = clamp(h * 100, 0, 100) + '%';
