@@ -53,7 +53,7 @@ var ret = function(element, initialColor) {
     }
 
     H(hsv.h());
-    SV(hsv.s(), hsv.v());
+    SV(hsv.s(), 1 - hsv.v());
 
     function H(h) {
       p2.style.top = clamp(h * 100, 0, 100) + '%';
