@@ -879,16 +879,16 @@ var ret = function(element, initialColor) {
       p1.style.top = clamp(v * 100, 0, 100) + '%'; 
     }
 
-    var changeListeners = [];
+    var listeners = {};
+
     function changed() {
-      for(var i = 0, len = changeListeners.length; i < len; i++)
-        changeListeners[i](hsv);
+      for(var i = 0, len = listeners.change.length; i < len; i++)
+        listeners.change[i](hsv);
     }
 
-    var doneListeners = [];
     function done() {
-      for(var i = 0, len = doneListeners.length; i < len; i++)
-        doneListeners[i](hsv);
+      for(var i = 0, len = listeners.done.length; i < len; i++)
+        listeners.done[i](hsv);
     }
 
     var ob = {
@@ -909,10 +909,18 @@ var ret = function(element, initialColor) {
         return ob;
       },
       on: function(evt, cb) {
-        if(evt == 'change') changeListeners.push(cb);
-        if(evt == 'done') doneListeners.push(cb);
-
+        (listeners[evt] || (listeners[evt] = [])).push(cb);
         return ob;
+      },
+      removeAllListeners: function(evt) {
+        if (evt) {
+          delete listeners[evt];
+        }
+        else {
+          for (key in listeners) {
+            delete listeners[key];
+          }
+        }
       }
     };
 
