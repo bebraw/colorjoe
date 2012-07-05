@@ -45,6 +45,11 @@ joe.on("done", function(color) {
 
 The color object is from [colorjs](http://bebraw.github.com/colorjs/).
 
+## Contributors
+
+* [Juho Vepsäläinen](https://github.com/bebraw) - Core
+* [Esa-Matti Suuronen](https://github.com/epeli) -
+  [Grunt](https://github.com/cowboy/grunt) support
 
 ## License
 
