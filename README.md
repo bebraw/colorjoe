@@ -50,6 +50,10 @@ The color object is from [colorjs](http://bebraw.github.com/colorjs/).
 * [Esa-Matti Suuronen](https://github.com/epeli) -
   [Grunt](https://github.com/cowboy/grunt) support
 
+## Hacking
+
+Use [grunt](http://gruntjs.com/) command to build prepackaged files in `dist/`.
+
 ## License
 
 colorjoe is available under MIT. See [LICENSE](https://github.com/bebraw/colorjoe/blob/master/LICENSE) for more details.
