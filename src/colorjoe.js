@@ -58,12 +58,12 @@ var ret = function(element, initialColor) {
 
     function H(h) {
       p2.style.top = clamp(h * 100, 0, 100) + '%';
-      twod.style.background = color.hsva({h: h, s: 1, v: 1}).toCSS();    
+      twod.style.background = color.hsva({h: h, s: 1, v: 1}).toCSS();
     }
 
     function SV(s, v) {
       p1.style.left = clamp(s * 100, 0, 100) + '%';
-      p1.style.top = clamp(v * 100, 0, 100) + '%'; 
+      p1.style.top = clamp(v * 100, 0, 100) + '%';
     }
 
     var listeners = {change: [], done: []};
@@ -108,7 +108,7 @@ var ret = function(element, initialColor) {
           delete listeners[evt];
         }
         else {
-          for (key in listeners) {
+          for(var key in listeners) {
             delete listeners[key];
           }
         }

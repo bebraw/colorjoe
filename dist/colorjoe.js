@@ -871,12 +871,12 @@ var ret = function(element, initialColor) {
 
     function H(h) {
       p2.style.top = clamp(h * 100, 0, 100) + '%';
-      twod.style.background = color.hsva({h: h, s: 1, v: 1}).toCSS();    
+      twod.style.background = color.hsva({h: h, s: 1, v: 1}).toCSS();
     }
 
     function SV(s, v) {
       p1.style.left = clamp(s * 100, 0, 100) + '%';
-      p1.style.top = clamp(v * 100, 0, 100) + '%'; 
+      p1.style.top = clamp(v * 100, 0, 100) + '%';
     }
 
     var listeners = {change: [], done: []};
@@ -921,7 +921,7 @@ var ret = function(element, initialColor) {
           delete listeners[evt];
         }
         else {
-          for (key in listeners) {
+          for(var key in listeners) {
             delete listeners[key];
           }
         }
@@ -982,33 +982,33 @@ return function(e, initialColor) {
   );
 
   var div = colorjoe.partial(colorjoe.e, 'div');
-  
+
   var extras = div('extras', joe.e);
   var curColor = div('currentColor', extras);
   var rgb = div('rgb', extras);
-  
+
   var r = labelInput('color r', 'R', rgb, 3); 
   r.input.onkeyup = updateJoe;
-  
+
   var g = labelInput('color g', 'G', rgb, 3); 
   g.input.onkeyup = updateJoe;
-  
+
   var b = labelInput('color b', 'B', rgb, 3); 
   b.input.onkeyup = updateJoe;
-  
-  var hex = labelInput('hex', '', extras, 6); 
+
+  var hex = labelInput('hex', '', extras, 6);
   hex.input.onkeyup = function(e) {
     var val = e.target.value;
     var hsva = color.hsva(val);
     var rgba = color.rgba(val);
-    
+
     joe.set(hsva);
     setBg(hsva);
     r.input.value = Math.round(rgba.r() * 255);
     g.input.value = Math.round(rgba.g() * 255);
     b.input.value = Math.round(rgba.b() * 255);
-  };  
-  
+  };
+
   joe.update();
 
   function updateJoe(e) {
@@ -1016,14 +1016,14 @@ return function(e, initialColor) {
     var hsva = color.hsva(color.rgba({
       r: r.input.value / 255,
       g: g.input.value / 255,
-      b: b.input.value / 255 
+      b: b.input.value / 255
     }));
 
     joe.set(hsva);
     setBg(hsva);
     hex.input.value = hsva.toHex();
   }
-  
+
   function setBg(c) {
     curColor.style.background = c.toCSS();
   }
