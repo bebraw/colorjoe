@@ -98,6 +98,16 @@ var ret = function(element, initialColor) {
       on: function(evt, cb) {
         (listeners[evt] || (listeners[evt] = [])).push(cb);
         return ob;
+      },
+      removeAllListeners: function(evt) {
+        if (evt) {
+          delete listeners[evt];
+        }
+        else {
+          for (key in listeners) {
+            delete listeners[key];
+          }
+        }
       }
     };
 
