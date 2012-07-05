@@ -66,7 +66,7 @@ var ret = function(element, initialColor) {
       p1.style.top = clamp(v * 100, 0, 100) + '%'; 
     }
 
-    var listeners = {};
+    var listeners = {change: [], done: []};
 
     function changed() {
       for(var i = 0, len = listeners.change.length; i < len; i++)
@@ -96,7 +96,11 @@ var ret = function(element, initialColor) {
         return ob;
       },
       on: function(evt, cb) {
-        (listeners[evt] || (listeners[evt] = [])).push(cb);
+        if(evt == 'change' || evt == 'done') {
+          listeners[evt].push(cb);
+        }
+        else console.warn('Passed invalid evt name to colorjoe.on');
+
         return ob;
       },
       removeAllListeners: function(evt) {
