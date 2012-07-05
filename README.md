@@ -46,6 +46,10 @@ joe.on("done", function(color) {
 The color object is from [colorjs](http://bebraw.github.com/colorjs/).
 
 
+## Hacking
+
+Use [grunt](http://gruntjs.com/) command to build prepackaged files in `dist/`.
+
 ## License
 
 colorjoe is available under MIT. See LICENSE for more details.
