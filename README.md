@@ -48,7 +48,7 @@ The color object is from [colorjs](http://bebraw.github.com/colorjs/).
 
 * [Juho Vepsäläinen](https://github.com/bebraw) - Core
 * [Esa-Matti Suuronen](https://github.com/epeli) -
-  [Grunt](https://github.com/cowboy/grunt) support
+  [Grunt](https://github.com/cowboy/grunt) support + removeAllListeners
 
 ## Hacking
 
