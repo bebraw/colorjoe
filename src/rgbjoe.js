@@ -35,6 +35,8 @@ return function(e, initialColor) {
     var hsva = color.hsva(val);
     var rgba = color.rgba(val);
 
+    hsva.v(1 - hsva.v());
+
     joe.set(hsva);
     setBg(hsva);
     r.input.value = Math.round(rgba.r() * 255);
@@ -51,10 +53,12 @@ return function(e, initialColor) {
       g: g.input.value / 255,
       b: b.input.value / 255
     }));
+    hex.input.value = hsva.toHex();
+
+    hsva.v(1 - hsva.v());
 
     joe.set(hsva);
     setBg(hsva);
-    hex.input.value = hsva.toHex();
   }
 
   function setBg(c) {
