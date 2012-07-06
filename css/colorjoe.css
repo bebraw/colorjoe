@@ -6,12 +6,12 @@
     margin: 1em;
     display: inline-block;
 }
-  
+
 .colorPicker .extras {
     float: right;
     margin: 0.5em;
 }
-  
+
 .colorPicker .extras .currentColor {
     width: 65px;
     height: 30px;
@@ -19,33 +19,33 @@
     -moz-border-radius: .3em;
     border-radius: .3em;
 }
-  
+
 .colorPicker .extras .rgb {
     margin-top: 0.5em;
     margin-bottom: 0.5em;
 }
-  
+
 .colorPicker .extras .color {
     text-align: right;
 }
-  
+
 .colorPicker .extras .rgb input {
     width: 40px;
 }
-  
+
 .colorPicker .extras .hex {
     float: right;
 }
-  
+
 .colorPicker .extras .hex input {
     width: 60px;
 }
-  
+
 .colorPicker .twod {
     float: left;
     margin: 0.5em;
 }
-  
+
 /* main dimensions */
 .colorPicker .twod, .colorPicker .twod .bg {
     width: 200px;
@@ -54,7 +54,7 @@
 .colorPicker .oned, .colorPicker .oned .bg {
     height: 200px;
 }
-  
+
 .colorPicker .twod .bg {
     position: absolute;
     border: 1px solid #BBB;
@@ -108,7 +108,7 @@
     background: linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#000000',GradientType=0 );
 }
-  
+
 .colorPicker .oned {
     float: left;
     margin: 0.5em;
