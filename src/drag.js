@@ -109,8 +109,8 @@ function callCb(cb, elem, e) {
     var width = elem.clientWidth;
     var height = elem.clientHeight;
     var cursor = {
-        x: cursorX(e),
-        y: cursorY(e)
+        x: cursorX(elem, e),
+        y: cursorY(elem, e)
     };
     var x = (cursor.x - offset.x) / width;
     var y = (cursor.y - offset.y) / height;
@@ -144,24 +144,55 @@ function findPos(e) {
             x += e.offsetLeft;
             y += e.offsetTop;
         } while (e = e.offsetParent);
-      }
+    }
 
-    return {x: x, y: y}; 
+    return {x: x, y: y};
 }
 
 // http://javascript.about.com/library/blmousepos.htm
-function cursorX(evt) {
+function cursorX(elem, evt) {
+    if(isFixed(elem)) {
+        var bodyLeft = parseInt(document.defaultView.getComputedStyle(document.body, "").marginLeft, 10);
+
+        return evt.clientX - bodyLeft;
+    }
     if(evt.pageX) return evt.pageX;
     else if(evt.clientX)
-        return evt.clientX + (document.documentElement.scrollLeft ?
-            document.documentElement.scrollLeft :
-            document.body.scrollLeft);
+        return evt.clientX + document.body.scrollLeft;
 }
-function cursorY(evt) {
+function cursorY(elem, evt) {
+    if(isFixed(elem)) {
+        var bodyTop = parseInt(document.defaultView.getComputedStyle(document.body, "").marginTop, 10);
+
+        return evt.clientY - bodyTop;
+    }
     if(evt.pageY) return evt.pageY;
     else if(evt.clientY)
-        return evt.clientY + (document.documentElement.scrollTop ?
-            document.documentElement.scrollTop :
-            document.body.scrollTop);
+        return evt.clientY + document.body.scrollTop;
+}
+
+// http://www.velocityreviews.com/forums/t942580-mouse-position-in-both-fixed-and-relative-positioning.html
+function isFixed(element) {
+    // While not at the top of the document tree, or not fixed, keep
+    // searching upwards.
+    while (element.nodeName != "HTML" && usedStyle(element,
+            "position") != "fixed")
+        element = element.parentNode;
+        if(element.nodeName == "HTML") return false;
+        else return true;
+}
+
+// Used style is to get around browsers' different methods of getting
+// the currently used (e.g. inline, class, etc) style for an element
+function usedStyle(element, property) {
+    var s;
+
+    // getComputedStyle is the standard way but some ie versions don't
+    // support it
+    if(window.getComputedStyle)
+        s = window.getComputedStyle(element, null);
+    else s = element.currentStyle;
+
+    return s[property];
 }
 }));
