@@ -20,13 +20,13 @@ return function(e, initialColor) {
   var curColor = div('currentColor', extras);
   var rgb = div('rgb', extras);
 
-  var r = labelInput('color r', 'R', rgb, 3); 
+  var r = labelInput('color r', 'R', rgb, 3);
   r.input.onkeyup = updateJoe;
 
-  var g = labelInput('color g', 'G', rgb, 3); 
+  var g = labelInput('color g', 'G', rgb, 3);
   g.input.onkeyup = updateJoe;
 
-  var b = labelInput('color b', 'B', rgb, 3); 
+  var b = labelInput('color b', 'B', rgb, 3);
   b.input.onkeyup = updateJoe;
 
   var hex = labelInput('hex', '', extras, 6);
@@ -63,11 +63,11 @@ return function(e, initialColor) {
   }
 
   function labelInput(klass, n, p, maxLen) {
-    var d = div(klass, p); 
-    var l = label(n, d); 
+    var d = div(klass, p);
+    var l = label(n, d);
     var i = input('text', d, maxLen);
 
-    return {label: l, input: i}; 
+    return {label: l, input: i};
   }
 
   function label(c, p) {
