@@ -57,9 +57,12 @@
 
 .colorPicker .twod .bg {
     position: absolute;
+
+    /* These seem to cause issues in some browsers, careful!
     border: 1px solid #BBB;
     -moz-border-radius: .3em;
     border-radius: .3em;
+    */
 }
 .colorPicker .twod .pointer {
     position: relative;
