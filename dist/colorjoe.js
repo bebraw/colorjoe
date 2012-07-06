@@ -1,4 +1,4 @@
-/*! colorjoe - v0.3.0 - 2012-07-06
+/*! colorjoe - v0.3.5 - 2012-07-06
 * http://bebraw.github.com/colorjoe/
 * Copyright (c) 2012 Juho Vepsäläinen; Licensed MIT */
 
