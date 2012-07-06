@@ -48,13 +48,13 @@ var ret = function(element, initialColor) {
     function changeSV(p) {
       hsv.s(p.x);
       hsv.v(1 - p.y);
-      SV(p.x, p.y);
+      SV(p.x, 1 - p.y);
       changed(hsv);
     }
 
     H(hsv.h());
 
-    SV(hsv.s(), 1 - hsv.v());
+    SV(hsv.s(), hsv.v());
 
     function H(h) {
       p2.style.top = clamp(h * 100, 0, 100) + '%';
@@ -63,7 +63,7 @@ var ret = function(element, initialColor) {
 
     function SV(s, v) {
       p1.style.left = clamp(s * 100, 0, 100) + '%';
-      p1.style.top = clamp(v * 100, 0, 100) + '%';
+      p1.style.top = clamp((1 - v) * 100, 0, 100) + '%';
     }
 
     var listeners = {change: [], done: []};
@@ -89,9 +89,10 @@ var ret = function(element, initialColor) {
           return color.rgba(hsv);
       },
       set: function(c) {
-        hsv = c;
-        H(c.h());
-        SV(c.s(), c.v());
+        hsv = color.hsva(c);
+        hsv.v(hsv.v());
+        H(hsv.h());
+        SV(hsv.s(), hsv.v());
 
         return ob;
       },

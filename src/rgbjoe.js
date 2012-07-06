@@ -32,33 +32,30 @@ return function(e, initialColor) {
   var hex = labelInput('hex', '', extras, 6);
   hex.input.onkeyup = function(e) {
     var val = e.target.value;
-    var hsva = color.hsva(val);
-    var rgba = color.rgba(val);
+    joe.set(val);
 
-    hsva.v(1 - hsva.v());
+    var col = joe.get();
+    setBg(col);
 
-    joe.set(hsva);
-    setBg(hsva);
-    r.input.value = Math.round(rgba.r() * 255);
-    g.input.value = Math.round(rgba.g() * 255);
-    b.input.value = Math.round(rgba.b() * 255);
+    var rgb = color.rgba(col);
+    r.input.value = Math.round(rgb.r() * 255);
+    g.input.value = Math.round(rgb.g() * 255);
+    b.input.value = Math.round(rgb.b() * 255);
   };
 
   joe.update();
 
   function updateJoe(e) {
-    var val = e.target.value;
-    var hsva = color.hsva(color.rgba({
+    var rgb = color.rgba({
       r: r.input.value / 255,
       g: g.input.value / 255,
       b: b.input.value / 255
-    }));
-    hex.input.value = hsva.toHex();
+    });
+    joe.set(rgb);
 
-    hsva.v(1 - hsva.v());
-
-    joe.set(hsva);
-    setBg(hsva);
+    var col = joe.get();
+    hex.input.value = col.toHex();
+    setBg(col);
   }
 
   function setBg(c) {

@@ -861,13 +861,13 @@ var ret = function(element, initialColor) {
     function changeSV(p) {
       hsv.s(p.x);
       hsv.v(1 - p.y);
-      SV(p.x, p.y);
+      SV(p.x, 1 - p.y);
       changed(hsv);
     }
 
     H(hsv.h());
 
-    SV(hsv.s(), 1 - hsv.v());
+    SV(hsv.s(), hsv.v());
 
     function H(h) {
       p2.style.top = clamp(h * 100, 0, 100) + '%';
@@ -876,7 +876,7 @@ var ret = function(element, initialColor) {
 
     function SV(s, v) {
       p1.style.left = clamp(s * 100, 0, 100) + '%';
-      p1.style.top = clamp(v * 100, 0, 100) + '%';
+      p1.style.top = clamp((1 - v) * 100, 0, 100) + '%';
     }
 
     var listeners = {change: [], done: []};
@@ -902,9 +902,10 @@ var ret = function(element, initialColor) {
           return color.rgba(hsv);
       },
       set: function(c) {
-        hsv = c;
-        H(c.h());
-        SV(c.s(), c.v());
+        hsv = color.hsva(c);
+        hsv.v(hsv.v());
+        H(hsv.h());
+        SV(hsv.s(), hsv.v());
 
         return ob;
       },
@@ -999,33 +1000,30 @@ return function(e, initialColor) {
   var hex = labelInput('hex', '', extras, 6);
   hex.input.onkeyup = function(e) {
     var val = e.target.value;
-    var hsva = color.hsva(val);
-    var rgba = color.rgba(val);
+    joe.set(val);
 
-    hsva.v(1 - hsva.v());
+    var col = joe.get();
+    setBg(col);
 
-    joe.set(hsva);
-    setBg(hsva);
-    r.input.value = Math.round(rgba.r() * 255);
-    g.input.value = Math.round(rgba.g() * 255);
-    b.input.value = Math.round(rgba.b() * 255);
+    var rgb = color.rgba(col);
+    r.input.value = Math.round(rgb.r() * 255);
+    g.input.value = Math.round(rgb.g() * 255);
+    b.input.value = Math.round(rgb.b() * 255);
   };
 
   joe.update();
 
   function updateJoe(e) {
-    var val = e.target.value;
-    var hsva = color.hsva(color.rgba({
+    var rgb = color.rgba({
       r: r.input.value / 255,
       g: g.input.value / 255,
       b: b.input.value / 255
-    }));
-    hex.input.value = hsva.toHex();
+    });
+    joe.set(rgb);
 
-    hsva.v(1 - hsva.v());
-
-    joe.set(hsva);
-    setBg(hsva);
+    var col = joe.get();
+    hex.input.value = col.toHex();
+    setBg(col);
   }
 
   function setBg(c) {
