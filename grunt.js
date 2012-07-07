@@ -15,8 +15,7 @@ module.exports = function(grunt) {
       dist: {
         src: ['<banner:meta.banner>',
               'node_modules/drag.js/src/drag.js',
-              'node_modules/colorjs/src/colorutils.js',
-              'node_modules/colorjs/src/color.js',
+              'node_modules/onecolor/one-color-all-debug.js',
               'src/elemutils.js',
               'src/colorjoe.js'],
         dest: 'dist/colorjoe.js'

@@ -201,649 +201,652 @@ function usedStyle(element, property) {
 }
 }));
 
-(function(root, factory) {
-    if(typeof exports === 'object') {
-        module.exports = factory();
+/*global define*/
+var installedColorSpaces = [],
+    namedColors = {},
+    channelRegExp = /\s*(\.\d+|\d+(?:\.\d+)?)(%)?\s*/,
+    alphaChannelRegExp = /\s*(\.\d+|\d+(?:\.\d+)?)\s*/,
+    cssColorRegExp = new RegExp(
+                         "^(rgb|hsl|hsv)a?" +
+                         "\\(" +
+                             channelRegExp.source + "," +
+                             channelRegExp.source + "," +
+                             channelRegExp.source +
+                             "(?:," + alphaChannelRegExp.source + ")?" +
+                         "\\)$", "i");
+
+function ONECOLOR (obj) {
+    if (Object.prototype.toString.apply(obj) === '[object Array]') {
+        if (obj[0].length === 4) {
+            // Assumed 4 element int RGB array from canvas with all channels [0;255]
+            return new ONECOLOR.RGB(obj[0] / 255, obj[1] / 255, obj[2] / 255, obj[3] / 255);
+        } else {
+            // Assumed destringified array from one.color.JSON()
+            return new ONECOLOR[obj[0]](obj.slice(1, obj.length));
+        }
+    } else if (obj.charCodeAt) {
+        var lowerCased = obj.toLowerCase();
+        if (namedColors[lowerCased]) {
+            obj = '#' + namedColors[lowerCased];
+        }
+        // Test for CSS rgb(....) string
+        var matchCssSyntax = obj.match(cssColorRegExp);
+        if (matchCssSyntax) {
+            var colorSpaceName = matchCssSyntax[1].toUpperCase(),
+                alpha = typeof matchCssSyntax[8] === 'undefined' ? matchCssSyntax[8] : parseFloat(matchCssSyntax[8]),
+                hasHue = colorSpaceName[0] === 'H',
+                firstChannelDivisor = matchCssSyntax[3] ? 100 : (hasHue ? 360 : 255),
+                secondChannelDivisor = (matchCssSyntax[5] || hasHue) ? 100 : 255,
+                thirdChannelDivisor = (matchCssSyntax[7] || hasHue) ? 100 : 255;
+            if (typeof ONECOLOR[colorSpaceName] === 'undefined') {
+                throw new Error("one.color." + colorSpaceName + " is not installed.");
+            }
+            return new ONECOLOR[colorSpaceName](
+                parseFloat(matchCssSyntax[2]) / firstChannelDivisor,
+                parseFloat(matchCssSyntax[4]) / secondChannelDivisor,
+                parseFloat(matchCssSyntax[6]) / thirdChannelDivisor,
+                alpha
+            );
+        }
+        // Assume hex syntax
+        if (obj.length < 6) {
+            // Allow CSS shorthand
+            obj = obj.replace(/^#?([0-9a-f])([0-9a-f])([0-9a-f])$/i, '$1$1$2$2$3$3');
+        }
+        // Split obj into red, green, and blue components
+        var hexMatch = obj.match(/^#?([0-9a-f][0-9a-f])([0-9a-f][0-9a-f])([0-9a-f][0-9a-f])$/i);
+        if (hexMatch) {
+            return new ONECOLOR.RGB(
+                parseInt(hexMatch[1], 16) / 255,
+                parseInt(hexMatch[2], 16) / 255,
+                parseInt(hexMatch[3], 16) / 255
+            );
+        }
+    } else if (typeof obj === 'object' && obj.isColor) {
+        return obj;
+    } else if (!isNaN(obj)) {
+        // Strange integer representation sometimes returned by document.queryCommandValue in some browser...
+        return new ONECOLOR.RGB((obj & 0xFF) / 255, ((obj & 0xFF00) >> 8) / 255, ((obj & 0xFF0000) >> 16) / 255);
     }
-    else if(typeof define === 'function' && define.amd) {
-        define(factory);
+    return false;
+};
+
+/*jslint evil:true*/
+function installColorSpace(colorSpaceName, propertyNames, config) {
+    ONECOLOR[colorSpaceName] = new Function(propertyNames.join(","),
+        // Allow passing an array to the constructor:
+        "if (Object.prototype.toString.apply(" + propertyNames[0] + ") === '[object Array]') {" +
+            propertyNames.map(function (propertyName, i) {
+                return propertyName + "=" + propertyNames[0] + "[" + i + "];";
+            }).reverse().join("") +
+        "}" +
+        "if (" + propertyNames.filter(function (propertyName) {
+            return propertyName !== 'alpha';
+        }).map(function (propertyName) {
+            return "isNaN(" + propertyName + ")";
+        }).join("||") + "){" + "throw new Error(\"[" + colorSpaceName + "]: Invalid color: (\"+" + propertyNames.join("+\",\"+") + "+\")\");}" +
+        propertyNames.map(function (propertyName) {
+            if (propertyName === 'hue') {
+                return "this._hue=hue<0?hue-Math.floor(hue):hue%1"; // Wrap
+            } else if (propertyName === 'alpha') {
+                return "this._alpha=(isNaN(alpha)||alpha>1)?1:(alpha<0?0:alpha);";
+            } else {
+                return "this._" + propertyName + "=" + propertyName + "<0?0:(" + propertyName + ">1?1:" + propertyName + ")";
+            }
+        }).join(";") + ";"
+    );
+    ONECOLOR[colorSpaceName].propertyNames = propertyNames;
+
+    var prototype = ONECOLOR[colorSpaceName].prototype;
+
+    ['valueOf', 'hex', 'css', 'cssa'].forEach(function (methodName) {
+        prototype[methodName] = prototype[methodName] || (colorSpaceName === 'RGB' ? prototype.hex : new Function("return this.rgb()." + methodName + "();"));
+    });
+
+    prototype.isColor = true;
+
+    prototype.equals = function (otherColor, epsilon) {
+        if (typeof epsilon === 'undefined') {
+            epsilon = 1e-10;
+        }
+
+        otherColor = otherColor[colorSpaceName.toLowerCase()]();
+
+        for (var i = 0; i < propertyNames.length; i = i + 1) {
+            if (Math.abs(this['_' + propertyNames[i]] - otherColor['_' + propertyNames[i]]) > epsilon) {
+                return false;
+            }
+        }
+
+        return true;
+    };
+
+    prototype.toJSON = new Function(
+        "return ['" + colorSpaceName + "', " +
+            propertyNames.map(function (propertyName) {
+                return "this._" + propertyName;
+            }, this).join(", ") +
+        "];"
+    );
+
+    for (var propertyName in config) {
+        if (config.hasOwnProperty(propertyName)) {
+            var matchFromColorSpace = propertyName.match(/^from(.*)$/);
+            if (matchFromColorSpace) {
+                ONECOLOR[matchFromColorSpace[1].toUpperCase()].prototype[colorSpaceName.toLowerCase()] = config[propertyName];
+            } else {
+                prototype[propertyName] = config[propertyName];
+            }
+        }
     }
-    else {
-        root.colorutils = factory();
-    }
-}(this, function() {
-    var context = function(i, func) {
-        func(i);
+
+    // It is pretty easy to implement the conversion to the same color space:
+    prototype[colorSpaceName.toLowerCase()] = function () {
+        return this;
     };
+    prototype.toString = new Function("return \"[one.color." + colorSpaceName + ":\"+" + propertyNames.map(function (propertyName, i) {
+        return "\" " + propertyNames[i] + "=\"+this._" + propertyName;
+    }).join("+") + "+\"]\";");
 
-    var isArray = function(o) {
-        return Object.prototype.toString.call(o) === '[object Array]';
-    };
+    // Generate getters and setters
+    propertyNames.forEach(function (propertyName, i) {
+        prototype[propertyName] = new Function("value", "isDelta",
+            // Simple getter mode: color.red()
+            "if (typeof value === 'undefined') {" +
+                "return this._" + propertyName + ";" +
+            "}" +
+            // Adjuster: color.red(+.2, true)
+            "if (isDelta) {" +
+                "return new this.constructor(" + propertyNames.map(function (otherPropertyName, i) {
+                    return "this._" + otherPropertyName + (propertyName === otherPropertyName ? "+value" : "");
+                }).join(", ") + ");" +
+            "}" +
+            // Setter: color.red(.2);
+            "return new this.constructor(" + propertyNames.map(function (otherPropertyName, i) {
+                return propertyName === otherPropertyName ? "value" : "this._" + otherPropertyName;
+            }).join(", ") + ");");
+    });
 
-    var isObject = function(o) {
-        return Object.prototype.toString.call(o) === '[object Object]';
-    };
-
-    var isString = function(o) {
-        return typeof(o) === 'string';
-    };
-
-    var isDefined = function(input) {
-        return typeof input !== "undefined";
-    };
-
-    var lstrip = function(s, c) {
-        var ret = '';
-        var seeking = true;
-
-        each(function(chr) {
-            if(seeking) {
-                if(chr != c) {
-                    seeking = false;
-                    ret += chr;
-                }
-            }
-            else {
-                ret += chr;
-            }
-        }, s);
-
-        return ret;
-    };
-
-    var each = function(cb, o) {
-        if(isArray(o) || isString(o)) {
-            for(var i = 0, l = o.length; i < l; i++) {
-                cb(o[i], i);
-            }
-        }
-
-        if(isObject(o)) {
-            var j = 0;
-
-            for(var k in o) {
-                cb(k, o[k], j);
-
-                j++;
-            }
-        }
-    };
-
-    var map = function(cb, seq) {
-        var ret;
-
-        if(isArray(seq)) {
-            ret = [];
-
-            for(var i = 0, len = seq.length; i < len; i++) {
-                ret.push(cb(seq[i], i));
-            }
-        }
-
-        if(isObject(seq)) {
-            ret = {};
-
-            var j = 0; // XXX: enumerate
-            for(var k in seq) {
-                var v = seq[k];
-
-                ret[k] = cb(k, v, j);
-                j++;
-            }
-        }
-
-        return ret;
-    };
-
-    var filter = function(cb, seq) {
-        var ret;
-
-        // TODO: array
-
-        if(isObject(seq)) {
-            ret = {};
-
-            var j = 0; // XXX: enumerate
-            for(var k in seq) {
-                var v = seq[k];
-
-                if(cb(k, v, j)) {
-                    ret[k] = v;
-                }
-
-                j++;
-            }
-        }
-
-        return ret;
-    };
-
-    // XXX: make work with args generally
-    // XXX: make work with arrays too? 
-    var extend = function(a, b) {
-        var ret = {};
-
-        var assign = function(k, v) {
-            ret[k] = v;
-        };
-
-        each(assign, a);
-        each(assign, b);
-
-        return ret;
-    };
-
-    var toObject = function(zip) {
-        // converts zip to an object
-        var ret = {};
-
-        each(function(k) {
-            // XXX: this could fail!
-            ret[k[0]] = k[1];
-        }, zip);
-
-        return ret;
-    };
-
-    var zip = function(a, b) {
-        // XXX: might want to spec this better (min etc.)
-        var ret = [];
-
-        for(var i = 0; i < a.length; i++) {
-            ret.push([a[i], b[i]]);
-        }
-
-        return ret;
-    };
-
-    var keys = function(o) {
-        var ret = [];
-
-        each(function(k) {
-            ret.push(k);
-        }, o);
-
-        return ret;
-    };
-
-    var values = function(o) {
-        var ret = [];
-
-        each(function(k, v) {
-            ret.push(v);
-        }, o);
-
-        return ret;
-    };
-
-    var clamp = function(a, minValue, maxValue) {
-        return Math.min(Math.max(a, minValue), maxValue);
-    };
-
-    var leftFill = function(number, width, chr)
-    {
-        // http://stackoverflow.com/questions/1267283/how-can-i-create-a-zerofilled-value-using-javascript
-        width -= number.toString().length;
-
-        if(width > 0) {
-            return new Array(width + (/\./.test(number)? 2: 1)).join(chr) + number;
-        }
-
-        return number;
-    };
-
-    return {
-        context: context,
-        isArray: isArray,
-        isObject: isObject,
-        isString: isString,
-        isDefined: isDefined,
-        lstrip: lstrip,
-        each: each,
-        map: map,
-        filter: filter,
-        extend: extend,
-        toObject: toObject,
-        zip: zip,
-        keys: keys,
-        values: values,
-        clamp: clamp,
-        leftFill: leftFill
-    };
-}));
-
-(function(root, factory) {
-    if(typeof exports === 'object') {
-        // Node. Does not work with strict CommonJS, but
-        // only CommonJS-like environments that support module.exports,
-        // like Node.
-        module.exports = factory(require('./colorutils'));
-    }
-    else if(typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
-        define(['colorutils'], factory);
-    }
-    else {
-        // Browser globals
-        root.color = factory(root.colorutils);
-    }
-}(this, function(utils) {
-    var nameToHex = function(name) {
-        // based on http://www.phpied.com/rgb-color-parser-in-javascript/
-        var colors = {
-            aliceblue: 'f0f8ff',
-            antiquewhite: 'faebd7',
-            aqua: '00ffff',
-            aquamarine: '7fffd4',
-            azure: 'f0ffff',
-            beige: 'f5f5dc',
-            bisque: 'ffe4c4',
-            black: '000000',
-            blanchedalmond: 'ffebcd',
-            blue: '0000ff',
-            blueviolet: '8a2be2',
-            brown: 'a52a2a',
-            burlywood: 'deb887',
-            cadetblue: '5f9ea0',
-            chartreuse: '7fff00',
-            chocolate: 'd2691e',
-            coral: 'ff7f50',
-            cornflowerblue: '6495ed',
-            cornsilk: 'fff8dc',
-            crimson: 'dc143c',
-            cyan: '00ffff',
-            darkblue: '00008b',
-            darkcyan: '008b8b',
-            darkgoldenrod: 'b8860b',
-            darkgray: 'a9a9a9',
-            darkgreen: '006400',
-            darkkhaki: 'bdb76b',
-            darkmagenta: '8b008b',
-            darkolivegreen: '556b2f',
-            darkorange: 'ff8c00',
-            darkorchid: '9932cc',
-            darkred: '8b0000',
-            darksalmon: 'e9967a',
-            darkseagreen: '8fbc8f',
-            darkslateblue: '483d8b',
-            darkslategray: '2f4f4f',
-            darkturquoise: '00ced1',
-            darkviolet: '9400d3',
-            deeppink: 'ff1493',
-            deepskyblue: '00bfff',
-            dimgray: '696969',
-            dodgerblue: '1e90ff',
-            feldspar: 'd19275',
-            firebrick: 'b22222',
-            floralwhite: 'fffaf0',
-            forestgreen: '228b22',
-            fuchsia: 'ff00ff',
-            gainsboro: 'dcdcdc',
-            ghostwhite: 'f8f8ff',
-            gold: 'ffd700',
-            goldenrod: 'daa520',
-            gray: '808080',
-            green: '008000',
-            greenyellow: 'adff2f',
-            honeydew: 'f0fff0',
-            hotpink: 'ff69b4',
-            indianred : 'cd5c5c',
-            indigo : '4b0082',
-            ivory: 'fffff0',
-            khaki: 'f0e68c',
-            lavender: 'e6e6fa',
-            lavenderblush: 'fff0f5',
-            lawngreen: '7cfc00',
-            lemonchiffon: 'fffacd',
-            lightblue: 'add8e6',
-            lightcoral: 'f08080',
-            lightcyan: 'e0ffff',
-            lightgoldenrodyellow: 'fafad2',
-            lightgrey: 'd3d3d3',
-            lightgreen: '90ee90',
-            lightpink: 'ffb6c1',
-            lightsalmon: 'ffa07a',
-            lightseagreen: '20b2aa',
-            lightskyblue: '87cefa',
-            lightslateblue: '8470ff',
-            lightslategray: '778899',
-            lightsteelblue: 'b0c4de',
-            lightyellow: 'ffffe0',
-            lime: '00ff00',
-            limegreen: '32cd32',
-            linen: 'faf0e6',
-            magenta: 'ff00ff',
-            maroon: '800000',
-            mediumaquamarine: '66cdaa',
-            mediumblue: '0000cd',
-            mediumorchid: 'ba55d3',
-            mediumpurple: '9370d8',
-            mediumseagreen: '3cb371',
-            mediumslateblue: '7b68ee',
-            mediumspringgreen: '00fa9a',
-            mediumturquoise: '48d1cc',
-            mediumvioletred: 'c71585',
-            midnightblue: '191970',
-            mintcream: 'f5fffa',
-            mistyrose: 'ffe4e1',
-            moccasin: 'ffe4b5',
-            navajowhite: 'ffdead',
-            navy: '000080',
-            oldlace: 'fdf5e6',
-            olive: '808000',
-            olivedrab: '6b8e23',
-            orange: 'ffa500',
-            orangered: 'ff4500',
-            orchid: 'da70d6',
-            palegoldenrod: 'eee8aa',
-            palegreen: '98fb98',
-            paleturquoise: 'afeeee',
-            palevioletred: 'd87093',
-            papayawhip: 'ffefd5',
-            peachpuff: 'ffdab9',
-            peru: 'cd853f',
-            pink: 'ffc0cb',
-            plum: 'dda0dd',
-            powderblue: 'b0e0e6',
-            purple: '800080',
-            red: 'ff0000',
-            rosybrown: 'bc8f8f',
-            royalblue: '4169e1',
-            saddlebrown: '8b4513',
-            salmon: 'fa8072',
-            sandybrown: 'f4a460',
-            seagreen: '2e8b57',
-            seashell: 'fff5ee',
-            sienna: 'a0522d',
-            silver: 'c0c0c0',
-            skyblue: '87ceeb',
-            slateblue: '6a5acd',
-            slategray: '708090',
-            snow: 'fffafa',
-            springgreen: '00ff7f',
-            steelblue: '4682b4',
-            tan: 'd2b48c',
-            teal: '008080',
-            thistle: 'd8bfd8',
-            tomato: 'ff6347',
-            turquoise: '40e0d0',
-            violet: 'ee82ee',
-            violetred: 'd02090',
-            wheat: 'f5deb3',
-            white: 'ffffff',
-            whitesmoke: 'f5f5f5',
-            yellow: 'ffff00',
-            yellowgreen: '9acd32'
-        };
-
-        return name in colors? colors[name]: undefined;
-    };
-
-    var HEX_RGB = function(hex) {
-        hex = utils.lstrip(hex, '#');
-
-        // based on http://www.phpied.com/rgb-color-parser-in-javascript/
-        return {
-            r: parseInt(hex.substring(0, 2), 16) / 255 || 0,
-            g: parseInt(hex.substring(2, 4), 16) / 255 || 0,
-            b: parseInt(hex.substring(4, 6), 16) / 255 || 0
-        };
-    };
-
-    var HEX_HSV = function(hex) {
-        return RGB_HSV(HEX_RGB(hex));
-    };
-
-    var HEX_HSL = function(hex) {
-        return RGB_HSL(HEX_RGB(hex));
-    };
-
-    var HSV_RGB = function(hsv) {
-        // http://www.colorjack.com/opensource/dhtml+color+picker.html
-        // h, s, v e [0, 1]
-        var R, B, G, S = hsv.s, V = hsv.v, H = hsv.h;
-
-        if(S > 0) {
-            if(H >= 1) H=0;
-
-            H = 6 * H; F = H - Math.floor(H);
-            A = V * (1.0 - S);
-            B = V * (1.0 - (S * F));
-            C = V * (1.0 - (S * (1.0 - F)));
-
-            switch(Math.floor(H)) {
-                case 0: R = V; G = C; B = A; break;
-                case 1: R = B; G = V; B = A; break;
-                case 2: R = A; G = V; B = C; break;
-                case 3: R = A; G = B; B = V; break;
-                case 4: R = C; G = A; B = V; break;
-                case 5: R = V; G = A; B = B; break;
-            }
-
-            return({
-                r: R? R: 0,
-                g: G? G: 0,
-                b: B? B: 0
-            });
-        }
-        
-        return({
-            r: V,
-            g: V,
-            b: V
+    function installForeignMethods(targetColorSpaceName, sourceColorSpaceName) {
+        var obj = {};
+        obj[sourceColorSpaceName.toLowerCase()] = new Function("return this.rgb()." + sourceColorSpaceName.toLowerCase() + "();"); // Fallback
+        ONECOLOR[sourceColorSpaceName].propertyNames.forEach(function (propertyName, i) {
+            obj[propertyName] = new Function("value", "isDelta", "return this." + sourceColorSpaceName.toLowerCase() + "()." + propertyName + "(value, isDelta);");
         });
-    };
+        for (var prop in obj) {
+            if (obj.hasOwnProperty(prop) && ONECOLOR[targetColorSpaceName].prototype[prop] === undefined) {
+                ONECOLOR[targetColorSpaceName].prototype[prop] = obj[prop];
+            }
+        }
+    }
 
-    var hue_to_rgb = function(p, q, t) {
-        // based on CamanJS
-        if(t < 0) t += 1;
-        if(t > 1) t -= 1;
-        if(t < 1/6) return p + (q - p) * 6 * t;
-        if(t < 1/2) return q;
-        if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+    installedColorSpaces.forEach(function (otherColorSpaceName) {
+        installForeignMethods(colorSpaceName, otherColorSpaceName);
+        installForeignMethods(otherColorSpaceName, colorSpaceName);
+    });
 
-        return p;
-    };
+    installedColorSpaces.push(colorSpaceName);
+};
 
-    var HSL_RGB = function(hsl) {
-        // based on CamanJS
-        var r, g, b;
-        var h = hsl.h;
-        var s = hsl.s;
-        var l = hsl.l;
-  
-        if(s === 0){
-            r = g = b = l; // achromatic
+ONECOLOR.installMethod = function (name, fn) {
+    installedColorSpaces.forEach(function (colorSpace) {
+        ONECOLOR[colorSpace].prototype[name] = fn;
+    });
+};
+
+installColorSpace('RGB', ['red', 'green', 'blue', 'alpha'], {
+    hex: function () {
+        var hexString = (Math.round(255 * this._red) * 0x10000 + Math.round(255 * this._green) * 0x100 + Math.round(255 * this._blue)).toString(16);
+        return '#' + ('00000'.substr(0, 6 - hexString.length)) + hexString;
+    },
+
+    css: function () {
+        return "rgb(" + Math.round(255 * this._red) + "," + Math.round(255 * this._green) + "," + Math.round(255 * this._blue) + ")";
+    },
+
+    cssa: function () {
+        return "rgba(" + Math.round(255 * this._red) + "," + Math.round(255 * this._green) + "," + Math.round(255 * this._blue) + "," + this._alpha + ")";
+    }
+});
+
+if (typeof module !== 'undefined') {
+    // Node module export
+    module.exports = ONECOLOR;
+} else {
+    // Browser
+    if (typeof define === 'function' && typeof define.amd !== 'undefined') {
+        define([], function () {
+            return ONECOLOR;
+        });
+    } else {
+        one = window.one || {};
+        one.color = ONECOLOR;
+    }
+}
+
+/*global namedColors*/
+namedColors = {
+    aliceblue: 'f0f8ff',
+    antiquewhite: 'faebd7',
+    aqua: '0ff',
+    aquamarine: '7fffd4',
+    azure: 'f0ffff',
+    beige: 'f5f5dc',
+    bisque: 'ffe4c4',
+    black: '000',
+    blanchedalmond: 'ffebcd',
+    blue: '00f',
+    blueviolet: '8a2be2',
+    brown: 'a52a2a',
+    burlywood: 'deb887',
+    cadetblue: '5f9ea0',
+    chartreuse: '7fff00',
+    chocolate: 'd2691e',
+    coral: 'ff7f50',
+    cornflowerblue: '6495ed',
+    cornsilk: 'fff8dc',
+    crimson: 'dc143c',
+    cyan: '0ff',
+    darkblue: '00008b',
+    darkcyan: '008b8b',
+    darkgoldenrod: 'b8860b',
+    darkgray: 'a9a9a9',
+    darkgrey: 'a9a9a9',
+    darkgreen: '006400',
+    darkkhaki: 'bdb76b',
+    darkmagenta: '8b008b',
+    darkolivegreen: '556b2f',
+    darkorange: 'ff8c00',
+    darkorchid: '9932cc',
+    darkred: '8b0000',
+    darksalmon: 'e9967a',
+    darkseagreen: '8fbc8f',
+    darkslateblue: '483d8b',
+    darkslategray: '2f4f4f',
+    darkslategrey: '2f4f4f',
+    darkturquoise: '00ced1',
+    darkviolet: '9400d3',
+    deeppink: 'ff1493',
+    deepskyblue: '00bfff',
+    dimgray: '696969',
+    dimgrey: '696969',
+    dodgerblue: '1e90ff',
+    firebrick: 'b22222',
+    floralwhite: 'fffaf0',
+    forestgreen: '228b22',
+    fuchsia: 'f0f',
+    gainsboro: 'dcdcdc',
+    ghostwhite: 'f8f8ff',
+    gold: 'ffd700',
+    goldenrod: 'daa520',
+    gray: '808080',
+    grey: '808080',
+    green: '008000',
+    greenyellow: 'adff2f',
+    honeydew: 'f0fff0',
+    hotpink: 'ff69b4',
+    indianred: 'cd5c5c',
+    indigo: '4b0082',
+    ivory: 'fffff0',
+    khaki: 'f0e68c',
+    lavender: 'e6e6fa',
+    lavenderblush: 'fff0f5',
+    lawngreen: '7cfc00',
+    lemonchiffon: 'fffacd',
+    lightblue: 'add8e6',
+    lightcoral: 'f08080',
+    lightcyan: 'e0ffff',
+    lightgoldenrodyellow: 'fafad2',
+    lightgray: 'd3d3d3',
+    lightgrey: 'd3d3d3',
+    lightgreen: '90ee90',
+    lightpink: 'ffb6c1',
+    lightsalmon: 'ffa07a',
+    lightseagreen: '20b2aa',
+    lightskyblue: '87cefa',
+    lightslategray: '789',
+    lightslategrey: '789',
+    lightsteelblue: 'b0c4de',
+    lightyellow: 'ffffe0',
+    lime: '0f0',
+    limegreen: '32cd32',
+    linen: 'faf0e6',
+    magenta: 'f0f',
+    maroon: '800000',
+    mediumaquamarine: '66cdaa',
+    mediumblue: '0000cd',
+    mediumorchid: 'ba55d3',
+    mediumpurple: '9370d8',
+    mediumseagreen: '3cb371',
+    mediumslateblue: '7b68ee',
+    mediumspringgreen: '00fa9a',
+    mediumturquoise: '48d1cc',
+    mediumvioletred: 'c71585',
+    midnightblue: '191970',
+    mintcream: 'f5fffa',
+    mistyrose: 'ffe4e1',
+    moccasin: 'ffe4b5',
+    navajowhite: 'ffdead',
+    navy: '000080',
+    oldlace: 'fdf5e6',
+    olive: '808000',
+    olivedrab: '6b8e23',
+    orange: 'ffa500',
+    orangered: 'ff4500',
+    orchid: 'da70d6',
+    palegoldenrod: 'eee8aa',
+    palegreen: '98fb98',
+    paleturquoise: 'afeeee',
+    palevioletred: 'd87093',
+    papayawhip: 'ffefd5',
+    peachpuff: 'ffdab9',
+    peru: 'cd853f',
+    pink: 'ffc0cb',
+    plum: 'dda0dd',
+    powderblue: 'b0e0e6',
+    purple: '800080',
+    red: 'f00',
+    rosybrown: 'bc8f8f',
+    royalblue: '4169e1',
+    saddlebrown: '8b4513',
+    salmon: 'fa8072',
+    sandybrown: 'f4a460',
+    seagreen: '2e8b57',
+    seashell: 'fff5ee',
+    sienna: 'a0522d',
+    silver: 'c0c0c0',
+    skyblue: '87ceeb',
+    slateblue: '6a5acd',
+    slategray: '708090',
+    slategrey: '708090',
+    snow: 'fffafa',
+    springgreen: '00ff7f',
+    steelblue: '4682b4',
+    tan: 'd2b48c',
+    teal: '008080',
+    thistle: 'd8bfd8',
+    tomato: 'ff6347',
+    turquoise: '40e0d0',
+    violet: 'ee82ee',
+    wheat: 'f5deb3',
+    white: 'fff',
+    whitesmoke: 'f5f5f5',
+    yellow: 'ff0',
+    yellowgreen: '9acd32'
+};
+
+/*global one*/
+
+installColorSpace('HSV', ['hue', 'saturation', 'value', 'alpha'], {
+    rgb: function () {
+        var hue = this._hue,
+            saturation = this._saturation,
+            value = this._value,
+            i = Math.min(5, Math.floor(hue * 6)),
+            f = hue * 6 - i,
+            p = value * (1 - saturation),
+            q = value * (1 - f * saturation),
+            t = value * (1 - (1 - f) * saturation),
+            red,
+            green,
+            blue;
+        switch (i) {
+        case 0:
+            red = value;
+            green = t;
+            blue = p;
+            break;
+        case 1:
+            red = q;
+            green = value;
+            blue = p;
+            break;
+        case 2:
+            red = p;
+            green = value;
+            blue = t;
+            break;
+        case 3:
+            red = p;
+            green = q;
+            blue = value;
+            break;
+        case 4:
+            red = t;
+            green = p;
+            blue = value;
+            break;
+        case 5:
+            red = value;
+            green = p;
+            blue = q;
+            break;
+        }
+        return new ONECOLOR.RGB(red, green, blue, this._alpha);
+    },
+
+    hsl: function () {
+        var l = (2 - this._saturation) * this._value,
+            sv = this._saturation * this._value,
+            svDivisor = l <= 1 ? l : (2 - l),
+            saturation;
+
+        // Avoid division by zero when lightness approaches zero:
+        if (svDivisor < 1e-9) {
+            saturation = 0;
         } else {
-            var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-            var p = 2 * l - q;
-
-            r = hue_to_rgb(p, q, h + 1/3);
-            g = hue_to_rgb(p, q, h);
-            b = hue_to_rgb(p, q, h - 1/3);
+            saturation = sv / svDivisor;
         }
+        return new ONECOLOR.HSL(this._hue, saturation, l / 2, this._alpha);
+    },
 
-        return {
-            r: r,
-            g: g,
-            b: b
-        };
-    };
-
-    var RGB_HSV = function(rgb) {
-        // http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
-        var r = rgb.r;
-        var g = rgb.g;
-        var b = rgb.b;
-        var max = Math.max(r, g, b), min = Math.min(r, g, b);
-        var h, s, v = max;
-
-        var d = max - min;
-        s = max === 0 ? 0 : d / max;
-
-        if(max == min){
-            h = 0; // achromatic
-        } else{
-            switch(max){
-                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                case g: h = (b - r) / d + 2; break;
-                case b: h = (r - g) / d + 4; break;
-            }
-            h /= 6;
-        }
-
-        return {
-            h: h,
-            s: s,
-            v: v
-        };
-    };
-
-    var RGB_HSL = function(rgb) {
-        // based on CamanJS
-        var r = rgb.r;
-        var g = rgb.g;
-        var b = rgb.b;
-
-        var max = Math.max(r, g, b), min = Math.min(r, g, b), 
-            h, s, l = (max + min) / 2;
-
-        if(max == min){
-            h = s = 0; // achromatic
+    fromRgb: function () { // Becomes one.color.RGB.prototype.hsv
+        var red = this._red,
+            green = this._green,
+            blue = this._blue,
+            max = Math.max(red, green, blue),
+            min = Math.min(red, green, blue),
+            delta = max - min,
+            hue,
+            saturation = (max === 0) ? 0 : (delta / max),
+            value = max;
+        if (delta === 0) {
+            hue = 0;
         } else {
-            var d = max - min;
-            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-            switch(max){
-                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                case g: h = (b - r) / d + 2; break;
-                case b: h = (r - g) / d + 4; break;
+            switch (max) {
+            case red:
+                hue = (green - blue) / delta / 6 + (green < blue ? 1 : 0);
+                break;
+            case green:
+                hue = (blue - red) / delta / 6 + 1 / 3;
+                break;
+            case blue:
+                hue = (red - green) / delta / 6 + 2 / 3;
+                break;
             }
-            h /= 6;
+        }
+        return new ONECOLOR.HSV(hue, saturation, value, this._alpha);
+    }
+});
+
+/*global one*/
+
+
+installColorSpace('HSL', ['hue', 'saturation', 'lightness', 'alpha'], {
+    hsv: function () {
+        // Algorithm adapted from http://wiki.secondlife.com/wiki/Color_conversion_scripts
+        var l = this._lightness * 2,
+            s = this._saturation * ((l <= 1) ? l : 2 - l),
+            saturation;
+
+        // Avoid division by zero when l + s is very small (approaching black):
+        if (l + s < 1e-9) {
+            saturation = 0;
+        } else {
+            saturation = (2 * s) / (l + s);
         }
 
-        return {h: h, s: s, l: l};
-    };
+        return new ONECOLOR.HSV(this._hue, saturation, (l + s) / 2, this._alpha);
+    },
 
-    var RGB_HEX = function(rgb) {
-        // r, g, b e [0, 1]
-        function toHex(n) {return utils.leftFill(Math.round(n * 255).toString(16), 2, 0);}
+    rgb: function () {
+        return this.hsv().rgb();
+    },
 
-        return toHex(rgb.r) + toHex(rgb.g) + toHex(rgb.b);
-    };
+    fromRgb: function () { // Becomes one.color.RGB.prototype.hsv
+        return this.hsv().hsl();
+    }
+});
 
-    var HSV_HEX = function(hsv) {
-        return RGB_HEX(HSV_RGB(hsv));
-    };
+/*global one*/
 
-    var HSL_HEX = function(hsl) {
-        return RGB_HEX(HSL_RGB(hsl));
-    };
+installColorSpace('CMYK', ['cyan', 'magenta', 'yellow', 'black', 'alpha'], {
+    rgb: function () {
+        return new ONECOLOR.RGB((1 - this._cyan * (1 - this._black) - this._black),
+                                 (1 - this._magenta * (1 - this._black) - this._black),
+                                 (1 - this._yellow * (1 - this._black) - this._black),
+                                 this._alpha);
+    },
 
-    var colorTemplate = function(initialChannels, converters) {
-        var parse = function(initial) {
-            if(utils.isString(initial)) {
-                var hex = nameToHex(initial);
+    fromRgb: function () { // Becomes one.color.RGB.prototype.cmyk
+        // Adapted from http://www.javascripter.net/faq/rgb2cmyk.htm
+        var red = this._red,
+            green = this._green,
+            blue = this._blue,
+            cyan = 1 - red,
+            magenta = 1 - green,
+            yellow = 1 - blue,
+            black = 1;
+        if (red || green || blue) {
+            black = Math.min(cyan, Math.min(magenta, yellow));
+            cyan = (cyan - black) / (1 - black);
+            magenta = (magenta - black) / (1 - black);
+            yellow = (yellow - black) / (1 - black);
+        } else {
+            black = 1;
+        }
+        return new ONECOLOR.CMYK(cyan, magenta, yellow, black, this._alpha);
+    }
+});
 
-                if(!hex) {
-                    hex = initial;
-                }
+ONECOLOR.installMethod('clearer', function (amount) {
+    return this.alpha(isNaN(amount) ? -0.1 : -amount, true);
+});
 
-                return converters.hexToColor(hex);
-            }
 
-            if(utils.isObject(initial)) {
-                if('toHex' in initial) {
-                    var ret = converters.hexToColor(initial.toHex());
+ONECOLOR.installMethod('darken', function (amount) {
+    return this.lightness(isNaN(amount) ? -0.1 : -amount, true);
+});
 
-                    ret.a = initial.a();
 
-                    return ret;
-                }
+ONECOLOR.installMethod('saturate', function (amount) {
+    return this.saturation(isNaN(amount) ? -0.1 : -amount, true);
+});
 
-                return utils.filter(function(k) {
-                    return k in initialChannels;
-                }, initial);
-            }
+function gs () {
+    var rgb = this.rgb(),
+        val = rgb._red * 0.3 + rgb._green * 0.59 + rgb._blue * 0.11;
 
-            return null;
-        };
+    return new ONECOLOR.RGB(val, val, val, this._alpha);
+};
 
-        return function(initial) {
-            var channels = utils.extend(initialChannels, parse(initial));
+ONECOLOR.installMethod('greyscale', gs);
+ONECOLOR.installMethod('grayscale', gs);
 
-            channels = utils.map(function(k, v) {
-                return utils.clamp(v, 0, 1);
-            }, channels);
 
-            var channel = function(name) {
-                return function(v) {
-                    if(!utils.isDefined(v)) return channels[name];
+ONECOLOR.installMethod('lighten', function (amount) {
+    return this.lightness(isNaN(amount) ? 0.1 : amount, true);
+});
 
-                    channels[name] = utils.clamp(v, 0, 1);
+ONECOLOR.installMethod('mix', function (otherColor, weight) {
+    otherColor = ONECOLOR(otherColor).rgb();
+    weight = 1 - (weight || 0.5);
 
-                    return methods;
-                };
-            };
+    var w = weight * 2 - 1,
+        a = this._alpha - otherColor._alpha,
+        weight1 = (((w * a === -1) ? w : (w + a) / (1 + w * a)) + 1) / 2,
+        weight2 = 1 - weight1,
+        rgb = this.rgb();
 
-            var methods = {
-                toArray: function() {
-                    return utils.values(channels);
-                },
-                toCSS: function() {
-                    var rgb = converters.colorToRGB(channels);
-                    var r = parseInt(rgb.r * 255, 10);
-                    var g = parseInt(rgb.g * 255, 10);
-                    var b = parseInt(rgb.b * 255, 10);
-                    var a = channels.a;
+    return new ONECOLOR.RGB(
+        this._red * weight1 + otherColor._red * weight2,
+        this._green * weight1 + otherColor._green * weight2,
+        this._blue * weight1 + otherColor._blue * weight2,
+        this._alpha * weight + otherColor._alpha * (1 - weight)
+    );
+});
 
-                    if(channels.a < 1) {
-                        return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
-                    }
+ONECOLOR.installMethod('negate', function () {
+    var rgb = this.rgb();
+    return new ONECOLOR.RGB(1 - rgb._red, 1 - rgb._green, 1 - rgb._blue, this._alpha);
+});
 
-                    return 'rgb(' + r + ',' + g + ',' + b + ')';
-                },
-                toRGBA: function() { // XXX: experimental
-                    var rgba = converters.colorToRGB(channels);
-                    rgba.a = channels.a;
+ONECOLOR.installMethod('opaquer', function (amount) {
+    return this.alpha(isNaN(amount) ? 0.1 : amount, true);
+});
 
-                    return rgba;
-                },
-                toHex: function() {
-                    return converters.colorToHex(channels);
-                }
-            };
+ONECOLOR.installMethod('rotate', function (degrees) {
+    return this.hue((degrees || 0) / 360, true);
+});
 
-            utils.each(function(k) {
-                methods[k] = channel(k);
-            }, utils.keys(channels));
 
-            return methods;
-        };
-    };
+ONECOLOR.installMethod('saturate', function (amount) {
+    return this.saturation(isNaN(amount) ? 0.1 : amount, true);
+});
 
-    var rgba = colorTemplate({r: 0, g: 0, b: 0, a: 1}, {
-        hexToColor: HEX_RGB,
-        colorToRGB: function(a) {return a;},
-        colorToHex: RGB_HEX
+// Adapted from http://gimp.sourcearchive.com/documentation/2.6.6-1ubuntu1/color-to-alpha_8c-source.html
+/*
+    toAlpha returns a color where the values of the argument have been converted to alpha
+*/
+ONECOLOR.installMethod('toAlpha', function (color) {
+    var me = this.rgb(),
+        other = ONECOLOR(color).rgb(),
+        epsilon = 1e-10,
+        a = new ONECOLOR.RGB(0, 0, 0, me._alpha),
+        channels = ['_red', '_green', '_blue'];
+
+    channels.forEach(function (channel) {
+        if (me[channel] < epsilon) {
+            a[channel] = me[channel];
+        } else if (me[channel] > other[channel]) {
+            a[channel] = (me[channel] - other[channel]) / (1 - other[channel]);
+        } else if (me[channel] > other[channel]) {
+            a[channel] = (other[channel] - me[channel]) / other[channel];
+        } else {
+            a[channel] = 0;
+        }
     });
-    var hsva = colorTemplate({h: 0, s: 0, v: 0, a: 1}, {
-        hexToColor: HEX_HSV,
-        colorToRGB: HSV_RGB,
-        colorToHex: HSV_HEX
-    });
-    var hsla = colorTemplate({h: 0, s: 0, l: 0, a: 1}, {
-        hexToColor: HEX_HSL,
-        colorToRGB: HSL_RGB,
-        colorToHex: HSL_HEX
-    });
 
-    return {
-        nameToHex: nameToHex,
-        rgba: rgba,
-        hsva: hsva,
-        hsla: hsla
-    };
-}));
+    if (a._red > a._green) {
+        if (a._red > a._blue) {
+            me._alpha = a._red;
+        } else {
+            me._alpha = a._blue;
+        }
+    } else if (a._green > a._blue) {
+        me._alpha = a._green;
+    } else {
+        me._alpha = a._blue;
+    }
+
+    if (me._alpha < epsilon) {
+        return me;
+    }
+
+    channels.forEach(function (channel) {
+        me[channel] = (me[channel] - other[channel]) / me._alpha + other[channel];
+    });
+    me._alpha *= a._alpha;
+
+    return me;
+});
+
+/*global one*/
+
+// This file is purely for the build system
+
+// Convenience functions
+
 
 (function(root, factory) {
     if(typeof exports === 'object') {
@@ -909,9 +912,10 @@ function usedStyle(element, property) {
 
 (function(root, factory) {
   if(typeof define === 'function' && define.amd)
-    define(['./color', './drag', './elemutils'], factory);
-  else root.colorjoe = factory(root.color, root.drag, root.elemutils);
-}(this, function(color, drag, utils) {
+    // XXX: missing one-color (require AMD support to work!)
+    define(['./drag', './elemutils'], factory);
+  else root.colorjoe = factory(root.ONECOLOR, root.drag, root.elemutils);
+}(this, function(onecolor, drag, utils) {
 var picker = function(cbs) {
   if(!all(isFunction, [cbs.init, cbs.xy, cbs.z]))
     return console.warn('colorjoe: missing cb');
@@ -929,10 +933,10 @@ var picker = function(cbs) {
 /* pickers */
 picker.rgb = picker({
   init: function(col, xy, z) {
-    var ret = color.hsva(col);
+    var ret = onecolor(col);
 
-    this.xy(ret, {x: ret.s(), y: 1 - ret.v()}, xy, z);
-    this.z(ret, ret.h(), xy, z);
+    this.xy(ret, {x: ret.saturation(), y: 1 - ret.value()}, xy, z);
+    this.z(ret, ret.hue(), xy, z);
 
     return ret;
   },
@@ -940,22 +944,22 @@ picker.rgb = picker({
     X(xy.pointer, p.x);
     Y(xy.pointer, p.y);
 
-    return col.s(p.x).v(1 - p.y);
+    return col.saturation(p.x).value(1 - p.y);
   },
   z: function(col, v, xy, z) {
     Y(z.pointer, v);
     RGB_BG(xy.background, v);
 
-    return col.h(v);
+    return col.hue(v);
   }
 });
 
 picker.hsl = picker({
   init: function(col, xy, z) {
-    var ret = color.hsla(col);
+    var ret = onecolor(col);
 
-    this.xy(ret, {x: ret.h(), y: 1 - ret.s()}, xy, z);
-    this.z(ret, 1 - ret.l(), xy, z);
+    this.xy(ret, {x: ret.hue(), y: 1 - ret.saturation()}, xy, z);
+    this.z(ret, 1 - ret.lightness(), xy, z);
 
     return ret;
   },
@@ -964,12 +968,12 @@ picker.hsl = picker({
     Y(xy.pointer, p.y);
     RGB_BG(z.background, p.x);
 
-    return col.h(p.x).s(1 - p.y);
+    return col.hue(p.x).saturation(1 - p.y);
   },
   z: function(col, v, xy, z) {
     Y(z.pointer, v);
 
-    return col.l(1 - v);
+    return col.lightness(1 - v);
   }
 });
 
@@ -979,62 +983,77 @@ function currentColor(p) {
 
   return {
     change: function(col) {
-      BG(e, col.toCSS());
+      BG(e, col.cssa());
     }
   };
 }
 
+// TODO: alpha?
 function fields(x, y, z, fac) {
   fac = fac || 255;
 
-  // XXX: might need a nicer solution for this
-  var cs = x + y + z;
-  if(cs[cs.length - 1] != 'a') cs += 'a';
+  var channels = [x, y, z];
+  var initials = channels.map(function(n) {return n[0].toUpperCase();});
+  var cs = initials.join('');
+
+  if(['RGB', 'HSL', 'HSV', 'CMYK'].indexOf(cs) < 0)
+    return console.warn('Invalid field names', cs);
 
   return function(p, joe) {
     var c = utils.div('colorFields', p);
-    var elems = [x, y, z].map(function(n) {
-      var e = utils.labelInput('color ' + n, n.toUpperCase(), c, 3);
+    var elems = channels.map(function(n) {
+      var e = utils.labelInput('color ' + n, n[0].toUpperCase(), c, 3);
       e.input.onkeyup = update;
 
-      return e;
+      return {name: n, e: e};
     });
 
     function update() {
-      var col = {};
+      var col = [];
 
-      elems.forEach(function(e) {
-        var n = e.label.innerHTML.toLowerCase();
-        col[n] = e.input.value / fac;
-      });
+      elems.forEach(function(o) {col.push(o.e.input.value / fac);});
 
-      joe.set(color[cs](col));
+      joe.set(construct(onecolor[cs], col));
     }
 
     return {
       change: function(col) {
-        var rgb = color[cs](col);
-
-        elems.forEach(function(e) {
-          var n = e.label.innerHTML.toLowerCase();
-          e.input.value = Math.round(rgb[n]() * fac);
+        elems.forEach(function(o) {
+          o.e.input.value = Math.round(col[o.name]() * fac);
         });
       }
     };
   };
 }
 
+// http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
+function construct(constructor, args) {
+  function F() {
+    return constructor.apply(this, args);
+  }
+  F.prototype = constructor.prototype;
+  return new F();
+}
+
 function hex(p, joe) {
   var e = utils.labelInput('hex', '', p, 6);
   e.input.onkeyup = function(elem) {
-    joe.set(elem.target.value);
+    joe.set('#' + pad(elem.target.value, 6, '0'));
   };
 
   return {
     change: function(col) {
-      e.input.value = col.toHex();
+      e.input.value = col.hex().slice(1);
     }
   };
+}
+
+function pad(a, n, c) {
+  var ret = a;
+
+  for(var i = a.length, len = n; i < n; i++) ret += c;
+
+  return ret;
 }
 
 picker.extras = {
@@ -1045,7 +1064,7 @@ picker.extras = {
 
 return picker;
 
-function RGB_BG(e, h) {BG(e, color.hsva({h: h, s: 1, v: 1}).toCSS());}
+function RGB_BG(e, h) {BG(e, new onecolor.HSV(h, 1, 1).cssa());}
 function X(p, a) {p.style.left = clamp(a * 100, 0, 100) + '%';}
 function Y(p, a) {p.style.top = clamp(a * 100, 0, 100) + '%';}
 function BG(e, c) {e.style.background = c;}
@@ -1109,15 +1128,13 @@ function setup(o) {
       return ob;
     },
     get: function() {
-      return color.rgba(col);
+      return col;
     },
     set: function(c) {
       var oldCol = this.get();
       col = cbs.init(c, xy, z);
 
-      // XXX: does not work perfectly always since hex does not yield same
-      // hex always even if same! might work better with other color lib
-      if(oldCol.toHex() != col.toHex()) changed();
+      if(oldCol.hex() != col.hex()) changed();
 
       return ob;
     },

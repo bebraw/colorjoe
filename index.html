@@ -23,17 +23,17 @@
   window.onload = function() {
       var val = document.getElementById('rgbValue');
       colorjoe.rgb('rgbPicker', 'black').on('change', function(c) {
-          val.innerHTML = c.toCSS();
+          val.innerHTML = c.css();
       }).update();
       colorjoe.rgb('extraPicker', '#113c38', [
           colorjoe.extras.currentColor,
-          colorjoe.extras.fields('r', 'g', 'b'),
-          colorjoe.extras.fields('h', 's', 'l', 100),
+          colorjoe.extras.fields('red', 'green', 'blue'),
+          colorjoe.extras.fields('hue', 'saturation', 'lightness', 100),
           colorjoe.extras.hex
       ]);
       colorjoe.hsl('hslPicker', '#113c38', [
           colorjoe.extras.currentColor,
-          colorjoe.extras.fields('h', 's', 'l', 100),
+          colorjoe.extras.fields('hue', 'saturation', 'lightness', 100),
           colorjoe.extras.hex
       ]);
   }

@@ -1,8 +1,9 @@
 (function(root, factory) {
   if(typeof define === 'function' && define.amd)
-    define(['./color', './drag', './elemutils'], factory);
-  else root.colorjoe = factory(root.color, root.drag, root.elemutils);
-}(this, function(color, drag, utils) {
+    // XXX: missing one-color (require AMD support to work!)
+    define(['./drag', './elemutils'], factory);
+  else root.colorjoe = factory(root.ONECOLOR, root.drag, root.elemutils);
+}(this, function(onecolor, drag, utils) {
 var picker = function(cbs) {
   if(!all(isFunction, [cbs.init, cbs.xy, cbs.z]))
     return console.warn('colorjoe: missing cb');
@@ -20,10 +21,10 @@ var picker = function(cbs) {
 /* pickers */
 picker.rgb = picker({
   init: function(col, xy, z) {
-    var ret = color.hsva(col);
+    var ret = onecolor(col);
 
-    this.xy(ret, {x: ret.s(), y: 1 - ret.v()}, xy, z);
-    this.z(ret, ret.h(), xy, z);
+    this.xy(ret, {x: ret.saturation(), y: 1 - ret.value()}, xy, z);
+    this.z(ret, ret.hue(), xy, z);
 
     return ret;
   },
@@ -31,22 +32,22 @@ picker.rgb = picker({
     X(xy.pointer, p.x);
     Y(xy.pointer, p.y);
 
-    return col.s(p.x).v(1 - p.y);
+    return col.saturation(p.x).value(1 - p.y);
   },
   z: function(col, v, xy, z) {
     Y(z.pointer, v);
     RGB_BG(xy.background, v);
 
-    return col.h(v);
+    return col.hue(v);
   }
 });
 
 picker.hsl = picker({
   init: function(col, xy, z) {
-    var ret = color.hsla(col);
+    var ret = onecolor(col);
 
-    this.xy(ret, {x: ret.h(), y: 1 - ret.s()}, xy, z);
-    this.z(ret, 1 - ret.l(), xy, z);
+    this.xy(ret, {x: ret.hue(), y: 1 - ret.saturation()}, xy, z);
+    this.z(ret, 1 - ret.lightness(), xy, z);
 
     return ret;
   },
@@ -55,12 +56,12 @@ picker.hsl = picker({
     Y(xy.pointer, p.y);
     RGB_BG(z.background, p.x);
 
-    return col.h(p.x).s(1 - p.y);
+    return col.hue(p.x).saturation(1 - p.y);
   },
   z: function(col, v, xy, z) {
     Y(z.pointer, v);
 
-    return col.l(1 - v);
+    return col.lightness(1 - v);
   }
 });
 
@@ -70,62 +71,77 @@ function currentColor(p) {
 
   return {
     change: function(col) {
-      BG(e, col.toCSS());
+      BG(e, col.cssa());
     }
   };
 }
 
+// TODO: alpha?
 function fields(x, y, z, fac) {
   fac = fac || 255;
 
-  // XXX: might need a nicer solution for this
-  var cs = x + y + z;
-  if(cs[cs.length - 1] != 'a') cs += 'a';
+  var channels = [x, y, z];
+  var initials = channels.map(function(n) {return n[0].toUpperCase();});
+  var cs = initials.join('');
+
+  if(['RGB', 'HSL', 'HSV', 'CMYK'].indexOf(cs) < 0)
+    return console.warn('Invalid field names', cs);
 
   return function(p, joe) {
     var c = utils.div('colorFields', p);
-    var elems = [x, y, z].map(function(n) {
-      var e = utils.labelInput('color ' + n, n.toUpperCase(), c, 3);
+    var elems = channels.map(function(n) {
+      var e = utils.labelInput('color ' + n, n[0].toUpperCase(), c, 3);
       e.input.onkeyup = update;
 
-      return e;
+      return {name: n, e: e};
     });
 
     function update() {
-      var col = {};
+      var col = [];
 
-      elems.forEach(function(e) {
-        var n = e.label.innerHTML.toLowerCase();
-        col[n] = e.input.value / fac;
-      });
+      elems.forEach(function(o) {col.push(o.e.input.value / fac);});
 
-      joe.set(color[cs](col));
+      joe.set(construct(onecolor[cs], col));
     }
 
     return {
       change: function(col) {
-        var rgb = color[cs](col);
-
-        elems.forEach(function(e) {
-          var n = e.label.innerHTML.toLowerCase();
-          e.input.value = Math.round(rgb[n]() * fac);
+        elems.forEach(function(o) {
+          o.e.input.value = Math.round(col[o.name]() * fac);
         });
       }
     };
   };
 }
 
+// http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
+function construct(constructor, args) {
+  function F() {
+    return constructor.apply(this, args);
+  }
+  F.prototype = constructor.prototype;
+  return new F();
+}
+
 function hex(p, joe) {
   var e = utils.labelInput('hex', '', p, 6);
   e.input.onkeyup = function(elem) {
-    joe.set(elem.target.value);
+    joe.set('#' + pad(elem.target.value, 6, '0'));
   };
 
   return {
     change: function(col) {
-      e.input.value = col.toHex();
+      e.input.value = col.hex().slice(1);
     }
   };
+}
+
+function pad(a, n, c) {
+  var ret = a;
+
+  for(var i = a.length, len = n; i < n; i++) ret += c;
+
+  return ret;
 }
 
 picker.extras = {
@@ -136,7 +152,7 @@ picker.extras = {
 
 return picker;
 
-function RGB_BG(e, h) {BG(e, color.hsva({h: h, s: 1, v: 1}).toCSS());}
+function RGB_BG(e, h) {BG(e, new onecolor.HSV(h, 1, 1).cssa());}
 function X(p, a) {p.style.left = clamp(a * 100, 0, 100) + '%';}
 function Y(p, a) {p.style.top = clamp(a * 100, 0, 100) + '%';}
 function BG(e, c) {e.style.background = c;}
@@ -200,15 +216,13 @@ function setup(o) {
       return ob;
     },
     get: function() {
-      return color.rgba(col);
+      return col;
     },
     set: function(c) {
       var oldCol = this.get();
       col = cbs.init(c, xy, z);
 
-      // XXX: does not work perfectly always since hex does not yield same
-      // hex always even if same! might work better with other color lib
-      if(oldCol.toHex() != col.toHex()) changed();
+      if(oldCol.hex() != col.hex()) changed();
 
       return ob;
     },
