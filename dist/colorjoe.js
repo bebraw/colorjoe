@@ -956,7 +956,7 @@ picker.rgb = picker({
 
 picker.hsl = picker({
   init: function(col, xy, z) {
-    var ret = onecolor(col);
+    var ret = onecolor(col).hsl();
 
     this.xy(ret, {x: ret.hue(), y: 1 - ret.saturation()}, xy, z);
     this.z(ret, 1 - ret.lightness(), xy, z);
