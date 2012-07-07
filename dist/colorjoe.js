@@ -228,6 +228,10 @@ function usedStyle(element, property) {
         return typeof(o) === 'string';
     };
 
+    var isDefined = function(input) {
+        return typeof input !== "undefined";
+    };
+
     var lstrip = function(s, c) {
         var ret = '';
         var seeking = true;
@@ -359,7 +363,7 @@ function usedStyle(element, property) {
             ret.push(k);
         }, o);
 
-        return ret;    
+        return ret;
     };
 
     var values = function(o) {
@@ -393,6 +397,7 @@ function usedStyle(element, property) {
         isArray: isArray,
         isObject: isObject,
         isString: isString,
+        isDefined: isDefined,
         lstrip: lstrip,
         each: each,
         map: map,
@@ -416,7 +421,7 @@ function usedStyle(element, property) {
     }
     else if(typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
-        define(['./colorutils'], factory);
+        define(['colorutils'], factory);
     }
     else {
         // Browser globals
@@ -772,7 +777,7 @@ function usedStyle(element, property) {
 
             var channel = function(name) {
                 return function(v) {
-                    if(!isDefined(v)) return channels[name];
+                    if(!utils.isDefined(v)) return channels[name];
 
                     channels[name] = utils.clamp(v, 0, 1);
 
@@ -815,8 +820,6 @@ function usedStyle(element, property) {
             return methods;
         };
     };
-
-    function isDefined(input) {return typeof input !== "undefined";}
 
     var rgba = colorTemplate({r: 0, g: 0, b: 0, a: 1}, {
         hexToColor: HEX_RGB,

@@ -5,6 +5,7 @@
     "version": "0.5.0-wip",
 
     "dependencies": {
+        "colorjs": "== 0.1.9"
     },
 
     "repository": {
