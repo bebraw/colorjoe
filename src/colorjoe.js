@@ -21,7 +21,7 @@ var picker = function(cbs) {
 /* pickers */
 picker.rgb = picker({
   init: function(col, xy, z) {
-    var ret = onecolor(col);
+    var ret = onecolor(col).hsl();
 
     this.xy(ret, {x: ret.saturation(), y: 1 - ret.value()}, xy, z);
     this.z(ret, ret.hue(), xy, z);
