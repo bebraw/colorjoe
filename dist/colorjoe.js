@@ -967,9 +967,39 @@ function currentColor(p) {
   };
 }
 
-function fields(x, y, z) {
-  return function(p) {
-    return {};
+function fields(x, y, z, fac) {
+  fac = fac || 255;
+
+  return function(p, joe) {
+    var c = utils.div('colorFields', p);
+    var elems = [x, y, z].map(function(n) {
+      var e = utils.labelInput('color ' + n, n.toUpperCase(), c, 3);
+      e.input.onkeyup = update;
+
+      return e;
+    });
+
+    function update() {
+      var col = {};
+
+      elems.forEach(function(e) {
+        var n = e.label.innerHTML.toLowerCase();
+        col[n] = e.input.value / fac;
+      });
+
+      joe.set(color.rgba(col));
+    }
+
+    return {
+      change: function(col) {
+        var rgb = color.rgba(col);
+
+        elems.forEach(function(e) {
+          var n = e.label.innerHTML.toLowerCase();
+          e.input.value = Math.round(rgb[n]() * fac);
+        });
+      }
+    };
   };
 }
 
