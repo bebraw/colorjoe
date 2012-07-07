@@ -1109,7 +1109,10 @@ function setup(o) {
       return color.rgba(col);
     },
     set: function(c) {
+      var oldCol = this.get();
       col = cbs.init(c, xy, z);
+console.log(oldCol.toHex(), col.toHex(), color.rgba(c).toHex());
+      if(oldCol.toHex() != col.toHex()) changed();
 
       return ob;
     },

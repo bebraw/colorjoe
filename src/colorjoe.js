@@ -203,7 +203,12 @@ function setup(o) {
       return color.rgba(col);
     },
     set: function(c) {
+      var oldCol = this.get();
       col = cbs.init(c, xy, z);
+
+      // XXX: does not work perfectly always since hex does not yield same
+      // hex always even if same! might work better with other color lib
+      if(oldCol.toHex() != col.toHex()) changed();
 
       return ob;
     },
