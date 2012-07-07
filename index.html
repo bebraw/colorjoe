@@ -22,6 +22,11 @@
   <script type="text/javascript">
   window.onload = function() {
       colorjoe.rgb('regularPicker', 'black');
+      colorjoe.rgb('rgbPicker', '#113c38', [
+          colorjoe.extras.currentColor,
+          colorjoe.extras.fields('R', 'G', 'B'),
+          colorjoe.extras.hex
+      ])
       //rgbjoe('rgbPicker', '#113c38');
       //hsljoe('hslPicker', '#113c38');
   }

@@ -913,16 +913,17 @@ var picker = function(cbs) {
   if(!all(isFunction, [cbs.init, cbs.xy, cbs.z]))
     return console.warn('colorjoe: missing cb');
 
-  return function(element, initialColor, widgets) {
+  return function(element, initialColor, extras) {
     setup({
       e: element,
       color: initialColor,
       cbs: cbs,
-      widgets: widgets
+      extras: extras
     });
   };
 };
 
+/* pickers */
 picker.rgb = picker({
   init: function(col, xy, z) {
     var ret = color.hsva(col);
@@ -948,10 +949,6 @@ picker.rgb = picker({
 
 function RGB_BG(e, h) {BG(e, color.hsva({h: h, s: 1, v: 1}).toCSS());}
 
-function X(p, a) {p.style.left = clamp(a * 100, 0, 100) + '%';}
-function Y(p, a) {p.style.top = clamp(a * 100, 0, 100) + '%';}
-function BG(e, c) {e.style.background = c;}
-
 // TODO
 picker.hsl = picker({
   init: function() {},
@@ -959,15 +956,44 @@ picker.hsl = picker({
   z: function() {}
 });
 
+/* extras */
+function currentColor(p) {
+  var e = utils.div('currentColor', p);
+
+  return {
+    change: function(col) {
+      BG(e, col.toCSS());
+    }
+  };
+}
+
+function fields(x, y, z) {
+  return function() {
+    // TODO
+  };
+}
+
+function hex() {
+  // TODO
+}
+
+picker.extras = {
+  currentColor: currentColor,
+  fields: fields,
+  hex: hex
+};
+
 return picker;
+
+function X(p, a) {p.style.left = clamp(a * 100, 0, 100) + '%';}
+function Y(p, a) {p.style.top = clamp(a * 100, 0, 100) + '%';}
+function BG(e, c) {e.style.background = c;}
 
 function setup(o) {
   if(!o.e) return console.warn('colorjoe: missing element');
 
   var e = isString(o.e)? document.getElementById(o.e): o.e;
   e.className = 'colorPicker';
-
-  // TODO: widgets
 
   var cbs = o.cbs;
 
@@ -1033,7 +1059,7 @@ function setup(o) {
       if(evt == 'change' || evt == 'done') {
         listeners[evt].push(cb);
       }
-      else console.warn('Passed invalid evt name to colorjoe.on');
+      else console.warn('Passed invalid evt name "' + evt + '" to colorjoe.on');
 
       return ob;
     },
@@ -1049,7 +1075,23 @@ function setup(o) {
     }
   };
 
+  setupExtras(e, ob.on, o.extras);
+  changed();
+
   return ob;
+}
+
+function setupExtras(p, on, extras) {
+  if(!extras) return;
+
+  var c = utils.div('extras', p);
+  var cbs;
+
+  extras.forEach(function(e) {
+    cbs = e(c);
+
+    for(var k in cbs) on(k, cbs[k]);
+  });
 }
 
 function xyslider(o) {
