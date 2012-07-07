@@ -22,7 +22,7 @@ picker.rgb = picker({
   init: function(col, xy, z) {
     var ret = color.hsva(col);
 
-    this.xy(ret, {x: ret.s(), y: ret.v()}, xy, z);
+    this.xy(ret, {x: ret.s(), y: 1 - ret.v()}, xy, z);
     this.z(ret, ret.h(), xy, z);
 
     return ret;
