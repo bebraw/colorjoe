@@ -77,11 +77,13 @@ function currentColor(p) {
 }
 
 // TODO: alpha?
-function fields(x, y, z, fac) {
+function fields(channels, fac) {
   fac = fac || 255;
 
-  var channels = [x, y, z];
-  var initials = channels.map(function(n) {return n[0].toUpperCase();});
+  var initials = channels.map(function(n) {
+    if(n == 'black') return 'K';
+    return n[0].toUpperCase();
+  });
   var cs = initials.join('');
 
   if(['RGB', 'HSL', 'HSV', 'CMYK'].indexOf(cs) < 0)
@@ -89,8 +91,8 @@ function fields(x, y, z, fac) {
 
   return function(p, joe) {
     var c = utils.div('colorFields', p);
-    var elems = channels.map(function(n) {
-      var e = utils.labelInput('color ' + n, n[0].toUpperCase(), c, 3);
+    var elems = channels.map(function(n, i) {
+      var e = utils.labelInput('color ' + n, initials[i], c, 3);
       e.input.onkeyup = update;
 
       return {name: n, e: e};
