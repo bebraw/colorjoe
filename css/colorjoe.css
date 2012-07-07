@@ -49,11 +49,11 @@
 
 /* main dimensions */
 .colorPicker .twod, .colorPicker .twod .bg {
-    width: 200px;
-    height: 200px;
+    width: 240px;
+    height: 240px;
 }
 .colorPicker .oned, .colorPicker .oned .bg {
-    height: 200px;
+    height: 240px;
 }
 
 .colorPicker .twod .bg {

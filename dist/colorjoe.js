@@ -947,8 +947,6 @@ picker.rgb = picker({
   }
 });
 
-function RGB_BG(e, h) {BG(e, color.hsva({h: h, s: 1, v: 1}).toCSS());}
-
 picker.hsl = picker({
   init: function(col, xy, z) {
     var ret = color.hsla(col);
@@ -986,6 +984,10 @@ function currentColor(p) {
 function fields(x, y, z, fac) {
   fac = fac || 255;
 
+  // XXX: might need a nicer solution for this
+  var cs = x + y + z;
+  if(cs[cs.length - 1] != 'a') cs += 'a';
+
   return function(p, joe) {
     var c = utils.div('colorFields', p);
     var elems = [x, y, z].map(function(n) {
@@ -1003,12 +1005,12 @@ function fields(x, y, z, fac) {
         col[n] = e.input.value / fac;
       });
 
-      joe.set(color.rgba(col));
+      joe.set(color[cs](col));
     }
 
     return {
       change: function(col) {
-        var rgb = color.rgba(col);
+        var rgb = color[cs](col);
 
         elems.forEach(function(e) {
           var n = e.label.innerHTML.toLowerCase();
@@ -1040,6 +1042,7 @@ picker.extras = {
 
 return picker;
 
+function RGB_BG(e, h) {BG(e, color.hsva({h: h, s: 1, v: 1}).toCSS());}
 function X(p, a) {p.style.left = clamp(a * 100, 0, 100) + '%';}
 function Y(p, a) {p.style.top = clamp(a * 100, 0, 100) + '%';}
 function BG(e, c) {e.style.background = c;}
