@@ -917,7 +917,7 @@ var picker = function(cbs) {
     return console.warn('colorjoe: missing cb');
 
   return function(element, initialColor, extras) {
-    setup({
+    return setup({
       e: element,
       color: initialColor,
       cbs: cbs,

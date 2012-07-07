@@ -1,3 +1,7 @@
+#rgbValue {
+    float: right;
+}
+
 .colorPicker {
     background: #E8E6E0;
     border: 1px solid #BBB;

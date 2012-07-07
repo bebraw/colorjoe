@@ -21,8 +21,11 @@
   <script src="dist/colorjoe.js"></script>
   <script type="text/javascript">
   window.onload = function() {
-      colorjoe.rgb('regularPicker', 'black');
-      colorjoe.rgb('rgbPicker', '#113c38', [
+      var val = document.getElementById('rgbValue');
+      colorjoe.rgb('rgbPicker', 'black').on('change', function(c) {
+          val.innerHTML = c.toCSS();
+      });
+      colorjoe.rgb('extraPicker', '#113c38', [
           colorjoe.extras.currentColor,
           colorjoe.extras.fields('r', 'g', 'b'),
           colorjoe.extras.fields('h', 's', 'l', 100),
@@ -57,13 +60,15 @@
       </section>
       <section>
 
-    <h2>Regular Picker</h2>
-
-    <div id="regularPicker"></div>
-
     <h2>RGB Picker</h2>
 
+    <div id="rgbValue"></div>
+
     <div id="rgbPicker"></div>
+
+    <h2>RGB Picker with Extras</h2>
+
+    <div id="extraPicker"></div>
 
     <h2>HSL Picker</h2>
 
