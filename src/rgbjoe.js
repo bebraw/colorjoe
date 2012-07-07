@@ -1,7 +1,8 @@
 (function(root, factory) {
-  if(typeof define === 'function' && define.amd) define(['./colorjoe', './color'], factory);
-  else root.rgbjoe = factory(root.colorjoe, root.color);
-}(this, function(colorjoe, color) {
+  if(typeof define === 'function' && define.amd)
+    define(['./colorjoe', './color', './elemutils'], factory);
+  else root.rgbjoe = factory(root.colorjoe, root.color, root.elemutils);
+}(this, function(colorjoe, color, utils) {
 return function(e, initialColor) {
   var joe = colorjoe(e, initialColor).on('change',
     function(c) {
@@ -14,11 +15,12 @@ return function(e, initialColor) {
     }
   );
 
-  var div = colorjoe.partial(colorjoe.e, 'div');
+  var div = utils.div;
+  var labelInput = utils.labelInput;
 
   var extras = div('extras', joe.e);
   var curColor = div('currentColor', extras);
-  var rgb = div('rgb', extras);
+  var rgb = div('colorFields', extras);
 
   var r = labelInput('color r', 'R', rgb, 3);
   r.input.onkeyup = updateJoe;
@@ -60,29 +62,6 @@ return function(e, initialColor) {
 
   function setBg(c) {
     curColor.style.background = c.toCSS();
-  }
-
-  function labelInput(klass, n, p, maxLen) {
-    var d = div(klass, p);
-    var l = label(n, d);
-    var i = input('text', d, maxLen);
-
-    return {label: l, input: i};
-  }
-
-  function label(c, p) {
-    var e = colorjoe.e('label', '', p);
-    e.innerHTML = c;
-
-    return e;
-  }
-
-  function input(t, p, maxLen) {
-    var e = colorjoe.e('input', '', p);
-    e.type = t;
-    if(maxLen) e.maxLength = maxLen;
-
-    return e;
   }
 
   return joe;

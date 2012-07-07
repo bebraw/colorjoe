@@ -17,8 +17,10 @@ module.exports = function(grunt) {
               'src/drag.js',
               'src/colorutils.js',
               'src/color.js',
+              'src/elemutils.js',
               'src/colorjoe.js',
-              'src/rgbjoe.js'],
+              'src/rgbjoe.js',
+              'src/hsljoe.js'],
         dest: 'dist/colorjoe.js'
       }
     },

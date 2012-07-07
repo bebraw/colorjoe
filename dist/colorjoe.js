@@ -1,4 +1,4 @@
-/*! colorjoe - v0.3.5 - 2012-07-06
+/*! colorjoe - v0.3.5 - 2012-07-07
 * http://bebraw.github.com/colorjoe/
 * Copyright (c) 2012 Juho Vepsäläinen; Licensed MIT */
 
@@ -772,13 +772,11 @@ function usedStyle(element, property) {
 
             var channel = function(name) {
                 return function(v) {
-                    if(v) {
-                        channels[name] = utils.clamp(v, 0, 1);
+                    if(!isDefined(v)) return channels[name];
 
-                        return methods;
-                    }
+                    channels[name] = utils.clamp(v, 0, 1);
 
-                    return channels[name];
+                    return methods;
                 };
             };
 
@@ -818,6 +816,8 @@ function usedStyle(element, property) {
         };
     };
 
+    function isDefined(input) {return typeof input !== "undefined";}
+
     var rgba = colorTemplate({r: 0, g: 0, b: 0, a: 1}, {
         hexToColor: HEX_RGB,
         colorToRGB: function(a) {return a;},
@@ -843,164 +843,261 @@ function usedStyle(element, property) {
 }));
 
 (function(root, factory) {
-  if(typeof define === 'function' && define.amd)
-    define(['./color', './drag'], factory);
-  else root.colorjoe = factory(root.color, root.drag);
-}(this, function(color, drag) {
-var ret = function(element, initialColor) {
-  var picker = element;
-  if(isString(element)) picker = document.getElementById(element);
-
-  if(picker) return setup(picker, initialColor);
-
-  function setup(picker, col) {
-    var hsv = color.hsva(col);
-
-    picker.className = 'colorPicker';
-
+    if(typeof exports === 'object') {
+        module.exports = factory();
+    }
+    else if(typeof define === 'function' && define.amd) {
+        define(factory);
+    }
+    else {
+        root.elemutils = factory();
+    }
+}(this, function() {
     var div = partial(e, 'div');
-    var twod = div('twod', picker);
-    var p1 = div('pointer', twod);
-    div('shape shape1', p1);
-    div('shape shape2', p1);
-    div('bg bg1', twod);
-    div('bg bg2', twod);
 
-    var oned = div('oned', picker);
-    var p2 = div('pointer', oned);
-    div('shape', p2);
-    div('bg', oned);
+    function e(type, klass, p) {
+        var elem = document.createElement(type);
+        elem.className = klass;
+        p.appendChild(elem);
 
-    drag(oned, {
-      begin: changeH,
-      change: changeH,
-      end: done
-    });
-
-    function changeH(p) {
-      hsv.h(p.y);
-      H(p.y);
-      changed(hsv);
+        return elem;
     }
 
-    drag(twod, {
-      begin: changeSV,
-      change: changeSV,
-      end: done
-    });
+    // http://stackoverflow.com/questions/4394747/javascript-curry-function
+    function partial(fn) {
+        var slice = Array.prototype.slice;
+        var args = slice.apply(arguments, [1]);
 
-    function changeSV(p) {
-      hsv.s(p.x);
-      hsv.v(1 - p.y);
-      SV(p.x, 1 - p.y);
-      changed(hsv);
+        return function() {
+            return fn.apply(null, args.concat(slice.apply(arguments)));
+        };
     }
 
-    H(hsv.h());
+    function labelInput(klass, n, p, maxLen) {
+        var d = div(klass, p);
+        var l = label(n, d);
+        var i = input('text', d, maxLen);
 
-    SV(hsv.s(), hsv.v());
-
-    function H(h) {
-      p2.style.top = clamp(h * 100, 0, 100) + '%';
-      twod.style.background = color.hsva({h: h, s: 1, v: 1}).toCSS();
+        return {label: l, input: i};
     }
 
-    function SV(s, v) {
-      p1.style.left = clamp(s * 100, 0, 100) + '%';
-      p1.style.top = clamp((1 - v) * 100, 0, 100) + '%';
+    function label(c, p) {
+        var elem = e('label', '', p);
+        elem.innerHTML = c;
+
+        return elem;
     }
 
-    var listeners = {change: [], done: []};
+    function input(t, p, maxLen) {
+        var elem = e('input', '', p);
+        elem.type = t;
+        if(maxLen) elem.maxLength = maxLen;
 
-    function changed() {
-      for(var i = 0, len = listeners.change.length; i < len; i++)
-        listeners.change[i](hsv);
+        return elem;
     }
 
-    function done() {
-      for(var i = 0, len = listeners.done.length; i < len; i++)
-        listeners.done[i](hsv);
-    }
-
-    var ob = {
-      e: picker,
-      update: function() {
-        changed(hsv);
-
-        return ob;
-      },
-      get: function() {
-          return color.rgba(hsv);
-      },
-      set: function(c) {
-        hsv = color.hsva(c);
-        hsv.v(hsv.v());
-        H(hsv.h());
-        SV(hsv.s(), hsv.v());
-
-        return ob;
-      },
-      on: function(evt, cb) {
-        if(evt == 'change' || evt == 'done') {
-          listeners[evt].push(cb);
-        }
-        else console.warn('Passed invalid evt name to colorjoe.on');
-
-        return ob;
-      },
-      removeAllListeners: function(evt) {
-        if (evt) {
-          delete listeners[evt];
-        }
-        else {
-          for(var key in listeners) {
-            delete listeners[key];
-          }
-        }
-      }
+    return {
+        e: e,
+        div: div,
+        partial: partial,
+        labelInput: labelInput
     };
-
-    return ob;
-  }
-};
-
-// helpers needed by rgbjoe
-ret.partial = partial;
-ret.e = e;
-
-return ret;
-
-function clamp(a, minValue, maxValue) {
-  return Math.min(Math.max(a, minValue), maxValue);
-}
-
-function isString(o) {
-  return typeof(o) === 'string';
-}
-
-function e(type, klass, p) {
-  var elem = document.createElement(type);
-  elem.className = klass;
-  p.appendChild(elem);
-
-  return elem;
-}
-
-// http://stackoverflow.com/questions/4394747/javascript-curry-function
-function partial(fn) {
-  var slice = Array.prototype.slice;
-  var args = slice.apply(arguments, [1]);
-
-  return function() {
-    return fn.apply(null, args.concat(slice.apply(arguments)));
-  };
-}
 }));
 
 (function(root, factory) {
-  if(typeof define === 'function' && define.amd) define(['./colorjoe', './color'], factory);
-  else root.rgbjoe = factory(root.colorjoe, root.color);
-}(this, function(colorjoe, color) {
+  if(typeof define === 'function' && define.amd)
+    define(['./color', './drag', './elemutils'], factory);
+  else root.colorjoe = factory(root.color, root.drag, root.elemutils);
+}(this, function(color, drag, utils) {
+var picker = function(cbs) {
+  if(!all(isFunction, [cbs.init, cbs.xy, cbs.z]))
+    return console.warn('colorjoe: missing cb');
+
+  return function(element, initialColor, widgets) {
+    setup({
+      e: element,
+      color: initialColor,
+      cbs: cbs,
+      widgets: widgets
+    });
+  };
+};
+
+picker.rgb = picker({
+  init: function(col, xy, z) {
+    var ret = color.hsva(col);
+
+    this.xy(ret, {x: ret.s(), y: ret.v()}, xy, z);
+    this.z(ret, ret.h(), xy, z);
+
+    return ret;
+  },
+  xy: function(col, p, xy, z) {
+    X(xy.pointer, p.x);
+    Y(xy.pointer, p.y);
+
+    return col.s(p.x).v(1 - p.y);
+  },
+  z: function(col, v, xy, z) {
+    Y(z.pointer, v);
+    RGB_BG(xy.background, v);
+
+    return col.h(v);
+  }
+});
+
+function RGB_BG(e, h) {BG(e, color.hsva({h: h, s: 1, v: 1}).toCSS());}
+
+function X(p, a) {p.style.left = clamp(a * 100, 0, 100) + '%';}
+function Y(p, a) {p.style.top = clamp(a * 100, 0, 100) + '%';}
+function BG(e, c) {e.style.background = c;}
+
+// TODO
+picker.hsl = picker({
+  init: function() {},
+  xy: function() {},
+  z: function() {}
+});
+
+return picker;
+
+function setup(o) {
+  if(!o.e) return console.warn('colorjoe: missing element');
+
+  var e = isString(o.e)? document.getElementById(o.e): o.e;
+  e.className = 'colorPicker';
+
+  // TODO: widgets
+
+  var cbs = o.cbs;
+
+  var xy = xyslider({
+    parent: e,
+    'class': 'twod',
+    cbs: {
+      begin: changeXY,
+      change: changeXY,
+      end: done
+    }
+  });
+
+  function changeXY(p) {
+    col = cbs.xy(col, p, xy, z);
+    changed();
+  }
+
+  var z = slider({
+    parent: e,
+    'class': 'oned',
+    cbs: {
+      begin: changeZ,
+      change: changeZ,
+      end: done
+    }
+  });
+
+  function changeZ(p) {
+    col = cbs.z(col, p.y, xy, z);
+    changed();
+  }
+
+  var col = cbs.init(o.color, xy, z);
+  var listeners = {change: [], done: []};
+
+  function changed() {
+    for(var i = 0, len = listeners.change.length; i < len; i++)
+      listeners.change[i](col);
+  }
+
+  function done() {
+    for(var i = 0, len = listeners.done.length; i < len; i++)
+      listeners.done[i](col);
+  }
+
+  var ob = {
+    e: e,
+    update: function() {
+      changed();
+
+      return ob;
+    },
+    get: function() {
+      return color.rgba(col);
+    },
+    set: function(c) {
+      col = cbs.init(c, xy.pointer, z.pointer);
+
+      return ob;
+    },
+    on: function(evt, cb) {
+      if(evt == 'change' || evt == 'done') {
+        listeners[evt].push(cb);
+      }
+      else console.warn('Passed invalid evt name to colorjoe.on');
+
+      return ob;
+    },
+    removeAllListeners: function(evt) {
+      if (evt) {
+        delete listeners[evt];
+      }
+      else {
+        for(var key in listeners) {
+          delete listeners[key];
+        }
+      }
+    }
+  };
+
+  return ob;
+}
+
+function xyslider(o) {
+  var div = utils.div;
+  var twod = div(o['class'], o.parent);
+  var pointer = div('pointer', twod);
+  div('shape shape1', pointer);
+  div('shape shape2', pointer);
+  div('bg bg1', twod);
+  div('bg bg2', twod);
+
+  drag(twod, o.cbs);
+
+  return {
+    background: twod,
+    pointer: pointer
+  };
+}
+
+function slider(o) {
+  var div = utils.div;
+  var oned = div(o['class'], o.parent);
+  var pointer = div('pointer', oned);
+  div('shape', pointer);
+  div('bg', oned);
+
+  drag(oned, o.cbs);
+
+  return {
+    background: oned,
+    pointer: pointer
+  };
+}
+
+function all(cb, a) {return a.map(cb).filter(id).length == a.length;}
+function clamp(a, minValue, maxValue) {
+    return Math.min(Math.max(a, minValue), maxValue);
+}
+function isString(o) {return typeof(o) === 'string';}
+function isFunction(input) {return typeof input === "function";}
+function id(a) {return a;}
+}));
+
+(function(root, factory) {
+  if(typeof define === 'function' && define.amd)
+    define(['./colorjoe', './color', './elemutils'], factory);
+  else root.rgbjoe = factory(root.colorjoe, root.color, root.elemutils);
+}(this, function(colorjoe, color, utils) {
 return function(e, initialColor) {
   var joe = colorjoe(e, initialColor).on('change',
     function(c) {
@@ -1013,11 +1110,12 @@ return function(e, initialColor) {
     }
   );
 
-  var div = colorjoe.partial(colorjoe.e, 'div');
+  var div = utils.div;
+  var labelInput = utils.labelInput;
 
   var extras = div('extras', joe.e);
   var curColor = div('currentColor', extras);
-  var rgb = div('rgb', extras);
+  var rgb = div('colorFields', extras);
 
   var r = labelInput('color r', 'R', rgb, 3);
   r.input.onkeyup = updateJoe;
@@ -1061,29 +1159,66 @@ return function(e, initialColor) {
     curColor.style.background = c.toCSS();
   }
 
-  function labelInput(klass, n, p, maxLen) {
-    var d = div(klass, p);
-    var l = label(n, d);
-    var i = input('text', d, maxLen);
-
-    return {label: l, input: i};
-  }
-
-  function label(c, p) {
-    var e = colorjoe.e('label', '', p);
-    e.innerHTML = c;
-
-    return e;
-  }
-
-  function input(t, p, maxLen) {
-    var e = colorjoe.e('input', '', p);
-    e.type = t;
-    if(maxLen) e.maxLength = maxLen;
-
-    return e;
-  }
-
   return joe;
+};
+}));
+
+(function(root, factory) {
+  if(typeof define === 'function' && define.amd)
+    define(['./colorjoe', './color', './elemutils'], factory);
+  else root.hsljoe = factory(root.colorjoe, root.color, root.elemutils);
+}(this, function(colorjoe, color, utils) {
+return function(e, initialColor) {
+  var joe = colorjoe(e, initialColor).on('change',
+    function(c) { // XXX: not ok. need to customize the mapping
+    // h = x, s = y, l = 2d slider
+      var hsla = color.hsla(c);
+      h.input.value = Math.round(hsla.h() * 100);
+      s.input.value = Math.round(hsla.s() * 100);
+      l.input.value = Math.round(hsla.l() * 100);
+      hex.input.value = c.toHex();
+    }
+  );
+
+  var div = utils.div;
+  var extras = div('extras', joe.e);
+  var curColor = div('currentColor', extras);
+  var hsl = div('colorFields', extras);
+
+  var h = utils.labelInput('color h', 'H', hsl, 3);
+  h.input.onkeyup = updateJoe;
+
+  var s = utils.labelInput('color s', 'S', hsl, 3);
+  s.input.onkeyup = updateJoe;
+
+  var l = utils.labelInput('color l', 'L', hsl, 3);
+  l.input.onkeyup = updateJoe;
+
+  var hex = utils.labelInput('hex', '', extras, 6);
+  hex.input.onkeyup = function(e) {
+    var val = e.target.value;
+    joe.set(val);
+
+    var col = joe.get();
+
+    var hsl = color.hsla(col);
+    h.input.value = Math.round(hsl.h() * 100);
+    s.input.value = Math.round(hsl.s() * 100);
+    l.input.value = Math.round(hsl.l() * 100);
+  };
+
+  joe.update();
+
+  function updateJoe(e) {
+    var hsl = color.hsla({
+      h: h.input.value / 100,
+      s: s.input.value / 100,
+      l: l.input.value / 100
+    });
+    joe.set(hsl);
+
+    var col = joe.get();
+    hex.input.value = col.toHex();
+  }
 };
 }));

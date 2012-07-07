@@ -363,13 +363,11 @@
 
             var channel = function(name) {
                 return function(v) {
-                    if(v) {
-                        channels[name] = utils.clamp(v, 0, 1);
+                    if(!isDefined(v)) return channels[name];
 
-                        return methods;
-                    }
+                    channels[name] = utils.clamp(v, 0, 1);
 
-                    return channels[name];
+                    return methods;
                 };
             };
 
@@ -408,6 +406,8 @@
             return methods;
         };
     };
+
+    function isDefined(input) {return typeof input !== "undefined";}
 
     var rgba = colorTemplate({r: 0, g: 0, b: 0, a: 1}, {
         hexToColor: HEX_RGB,
