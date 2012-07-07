@@ -27,14 +27,14 @@
       }).update();
       colorjoe.rgb('extraPicker', '#113c38', [
           colorjoe.extras.currentColor,
-          colorjoe.extras.fields(['red', 'green', 'blue']),
-          colorjoe.extras.fields(['hue', 'saturation', 'lightness'], 100),
+          colorjoe.extras.fields('RGB'),
+          colorjoe.extras.fields('HSL', 100),
           colorjoe.extras.hex
       ]);
       colorjoe.hsl('hslPicker', '#113c38', [
           colorjoe.extras.currentColor,
-          colorjoe.extras.fields(['hue', 'saturation', 'lightness'], 100),
-          colorjoe.extras.fields(['cyan', 'magenta', 'yellow', 'black'], 100),
+          colorjoe.extras.fields('HSL', 100),
+          colorjoe.extras.fields('CMYK', 100),
           colorjoe.extras.hex
       ]);
   }

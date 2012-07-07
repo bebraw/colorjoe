@@ -989,22 +989,31 @@ function currentColor(p) {
 }
 
 // TODO: alpha?
-function fields(channels, fac) {
+function fields(cs, fac) {
   fac = fac || 255;
+  var methods = {
+    R: 'red',
+    G: 'green',
+    B: 'blue',
+    H: 'hue',
+    S: 'saturation',
+    V: 'value',
+    L: 'lightness',
+    C: 'cyan',
+    M: 'magenta',
+    Y: 'yellow',
+    K: 'black'
+  };
 
-  var initials = channels.map(function(n) {
-    if(n == 'black') return 'K';
-    return n[0].toUpperCase();
-  });
-  var cs = initials.join('');
+  var initials = cs.split('').map(function(n) {return n.toUpperCase();});
 
   if(['RGB', 'HSL', 'HSV', 'CMYK'].indexOf(cs) < 0)
     return console.warn('Invalid field names', cs);
 
   return function(p, joe) {
     var c = utils.div('colorFields', p);
-    var elems = channels.map(function(n, i) {
-      var e = utils.labelInput('color ' + n, initials[i], c, 3);
+    var elems = initials.map(function(n, i) {
+      var e = utils.labelInput('color ' + methods[n], n, c, 3);
       e.input.onkeyup = update;
 
       return {name: n, e: e};
@@ -1021,7 +1030,7 @@ function fields(channels, fac) {
     return {
       change: function(col) {
         elems.forEach(function(o) {
-          o.e.input.value = Math.round(col[o.name]() * fac);
+          o.e.input.value = Math.round(col[methods[o.name]]() * fac);
         });
       }
     };
