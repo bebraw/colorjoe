@@ -24,7 +24,7 @@
       var val = document.getElementById('rgbValue');
       colorjoe.rgb('rgbPicker', 'black').on('change', function(c) {
           val.innerHTML = c.toCSS();
-      });
+      }).update();
       colorjoe.rgb('extraPicker', '#113c38', [
           colorjoe.extras.currentColor,
           colorjoe.extras.fields('r', 'g', 'b'),
