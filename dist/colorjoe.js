@@ -1111,7 +1111,9 @@ function setup(o) {
     set: function(c) {
       var oldCol = this.get();
       col = cbs.init(c, xy, z);
-console.log(oldCol.toHex(), col.toHex(), color.rgba(c).toHex());
+
+      // XXX: does not work perfectly always since hex does not yield same
+      // hex always even if same! might work better with other color lib
       if(oldCol.toHex() != col.toHex()) changed();
 
       return ob;
