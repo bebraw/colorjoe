@@ -1,0 +1,29 @@
+{
+    "name": "colorjoe",
+    "description": "Scaleable color picker",
+    "author": "Juho Vepsalainen <bebraw@gmail.com>",
+    "version": "0.5.0-wip",
+
+    "dependencies": {
+    },
+
+    "repository": {
+        "type": "git",
+        "url": "https://bebraw@github.com/bebraw/colorjoe.git"
+    },
+
+    "homepage": "https://bebraw.github.com/colorjoe",
+
+    "bugs": {
+        "url": "https://github.com/bebraw/colorjoe/issues"
+    },
+
+    "keywords": ["color", "colour", "requirejs", "amd"],
+
+    "main": "dist/colorjoe.js",
+
+    "licenses": [{
+        "type": "MIT",
+        "url": "https://github.com/bebraw/colorjoe/blob/master/LICENSE"
+    }]
+}
