@@ -14,7 +14,7 @@ module.exports = function(grunt) {
     concat: {
       dist: {
         src: ['<banner:meta.banner>',
-              'src/drag.js',
+              'node_modules/drag.js/src/drag.js',
               'node_modules/colorjs/src/colorutils.js',
               'node_modules/colorjs/src/color.js',
               'src/elemutils.js',
