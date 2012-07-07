@@ -18,14 +18,16 @@ the dependencies from `src/`.
 ## Usage
 
 ```javascript
-var joe = colorjoe(element_id_or_dom_object, initial_color_value);
+var joe = colorjoe.rgb(element_id_or_dom_object, initial_color_value, extras);
 ```
 
 or
 
 ```javascript
-var joe = rgbjoe(element_id_or_dom_object, initial_color_value);
+var joe = colorjoe.hsl(element_id_or_dom_object, initial_color_value, extras);
 ```
+
+### Event Handling
 
 The returned joe object is an event emitter style object with `change` and
 `done` events. The `change` event is fired continuously when selecting and
@@ -34,21 +36,49 @@ The returned joe object is an event emitter style object with `change` and
 
 ```javascript
 joe.on("change", function(color) {
-    console.log("Selecting " + color.toCSS());
+    console.log("Selecting " + color.css());
 });
 
 joe.on("done", function(color) {
-    console.log("Selected " + color.toCSS());
+    console.log("Selected " + color.css());
 });
 ```
 
-The color object is from [colorjs](http://bebraw.github.com/colorjs/).
+The color object is from [one.color](https://github.com/One-com/one-color).
+
+### Get and Set
+
+In addition there are `set` and `get` methods. Ie. joe.get() would return the
+current color while joe.set('#aabbcc') would set it. `set` expects a parameter
+that one.color default constructor would accept.
+
+### Extras
+
+In order to make it easier to customize a picker based on your needs, colorjoe
+provides a few extras. The following example shows how to use them:
+
+```javascript
+var joe = colorjoe.hsl('hslPicker', 'red', [
+    colorjoe.extras.currentColor,
+    colorjoe.extras.fields('HSL', 255, 0),
+    colorjoe.extras.hex
+]);
+```
+
+The code above would generate a HSL picker that shows in addition the currently
+selected color, HSL input fields and a hex field.
+
+`fields` extra is a factory that accepts name of a color space (RGB, HSL, HSV
+or CMYK). In addition it takes maximum value (defaults to 255) and a fix value
+(defaults to 2). fix represents the amount of numbers shown after decimal.
 
 ## Contributors
 
 * [Juho Vepsäläinen](https://github.com/bebraw) - Core
 * [Esa-Matti Suuronen](https://github.com/epeli) -
   [Grunt](https://github.com/cowboy/grunt) support + removeAllListeners
+* [Peter Müller](https://github.com/Munter) -
+  [one.color](https://github.com/One-com/one-color)
 
 ## Hacking
 
