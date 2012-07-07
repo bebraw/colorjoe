@@ -92,6 +92,7 @@ function fields(cs, fac) {
     Y: 'yellow',
     K: 'black'
   };
+  var chg = false; // XXX
 
   var initials = cs.split('').map(function(n) {return n.toUpperCase();});
 
@@ -112,14 +113,17 @@ function fields(cs, fac) {
 
       elems.forEach(function(o) {col.push(o.e.input.value / fac);});
 
+      chg = true;
       joe.set(construct(onecolor[cs], col));
     }
 
     return {
       change: function(col) {
-        elems.forEach(function(o) {
-          o.e.input.value = col[methods[o.name]]() * fac;
-        });
+        if(!chg)
+          elems.forEach(function(o) {
+            o.e.input.value = col[methods[o.name]]() * fac;
+          });
+        chg = false;
       }
     };
   };
@@ -136,13 +140,17 @@ function construct(constructor, args) {
 
 function hex(p, joe) {
   var e = utils.labelInput('hex', '', p, 6);
+  var chg = false; // XXX
+
   e.input.onkeyup = function(elem) {
+    chg = true;
     joe.set('#' + pad(elem.target.value, 6, '0'));
   };
 
   return {
     change: function(col) {
-      e.input.value = col.hex().slice(1);
+      if(!chg) e.input.value = col.hex().slice(1);
+      chg = false;
     }
   };
 }
