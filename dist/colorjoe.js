@@ -968,13 +968,22 @@ function currentColor(p) {
 }
 
 function fields(x, y, z) {
-  return function() {
-    // TODO
+  return function(p) {
+    return {};
   };
 }
 
-function hex() {
-  // TODO
+function hex(p, joe) {
+  var e = utils.labelInput('hex', '', p, 6);
+  e.input.onkeyup = function(elem) {
+    joe.set(elem.target.value);
+  };
+
+  return {
+    change: function(col) {
+      e.input.value = col.toHex();
+    }
+  };
 }
 
 picker.extras = {
@@ -1051,7 +1060,7 @@ function setup(o) {
       return color.rgba(col);
     },
     set: function(c) {
-      col = cbs.init(c, xy.pointer, z.pointer);
+      col = cbs.init(c, xy, z);
 
       return ob;
     },
@@ -1075,22 +1084,22 @@ function setup(o) {
     }
   };
 
-  setupExtras(e, ob.on, o.extras);
+  setupExtras(e, ob, o.extras);
   changed();
 
   return ob;
 }
 
-function setupExtras(p, on, extras) {
+function setupExtras(p, joe, extras) {
   if(!extras) return;
 
   var c = utils.div('extras', p);
   var cbs;
 
   extras.forEach(function(e) {
-    cbs = e(c);
+    cbs = e(c, joe);
 
-    for(var k in cbs) on(k, cbs[k]);
+    for(var k in cbs) joe.on(k, cbs[k]);
   });
 }
 
