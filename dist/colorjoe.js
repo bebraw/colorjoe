@@ -989,8 +989,9 @@ function currentColor(p) {
 }
 
 // TODO: alpha?
-function fields(cs, fac) {
+function fields(cs, fac, fix) {
   fac = fac || 255;
+  fix = fix >= 0? fix: 2;
   var methods = {
     R: 'red',
     G: 'green',
@@ -1004,6 +1005,8 @@ function fields(cs, fac) {
     Y: 'yellow',
     K: 'black'
   };
+  var inputLen = ('' + fac).length + fix;
+  inputLen = fix? inputLen + 1: inputLen;
   var chg = false; // XXX
 
   var initials = cs.split('').map(function(n) {return n.toUpperCase();});
@@ -1014,7 +1017,7 @@ function fields(cs, fac) {
   return function(p, joe) {
     var c = utils.div('colorFields', p);
     var elems = initials.map(function(n, i) {
-      var e = utils.labelInput('color ' + methods[n], n, c, 5);
+      var e = utils.labelInput('color ' + methods[n], n, c, inputLen);
       e.input.onkeyup = update;
 
       return {name: n, e: e};
@@ -1033,7 +1036,7 @@ function fields(cs, fac) {
       change: function(col) {
         if(!chg)
           elems.forEach(function(o) {
-            o.e.input.value = col[methods[o.name]]() * fac;
+            o.e.input.value = (col[methods[o.name]]() * fac).toFixed(fix);
           });
         chg = false;
       }
