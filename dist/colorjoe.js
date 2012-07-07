@@ -1013,7 +1013,7 @@ function fields(cs, fac) {
   return function(p, joe) {
     var c = utils.div('colorFields', p);
     var elems = initials.map(function(n, i) {
-      var e = utils.labelInput('color ' + methods[n], n, c, 3);
+      var e = utils.labelInput('color ' + methods[n], n, c, 5);
       e.input.onkeyup = update;
 
       return {name: n, e: e};
@@ -1030,7 +1030,7 @@ function fields(cs, fac) {
     return {
       change: function(col) {
         elems.forEach(function(o) {
-          o.e.input.value = Math.round(col[methods[o.name]]() * fac);
+          o.e.input.value = col[methods[o.name]]() * fac;
         });
       }
     };
