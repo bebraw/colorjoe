@@ -24,11 +24,14 @@
       colorjoe.rgb('regularPicker', 'black');
       colorjoe.rgb('rgbPicker', '#113c38', [
           colorjoe.extras.currentColor,
-          colorjoe.extras.fields('R', 'G', 'B'),
+          colorjoe.extras.fields('r', 'g', 'b'),
           colorjoe.extras.hex
-      ])
-      //rgbjoe('rgbPicker', '#113c38');
-      //hsljoe('hslPicker', '#113c38');
+      ]);
+      colorjoe.hsl('hslPicker', '#113c38', [
+          colorjoe.extras.currentColor,
+          colorjoe.extras.fields('h', 's', 'l'),
+          colorjoe.extras.hex
+      ]);
   }
   </script>
   </head>

@@ -949,11 +949,27 @@ picker.rgb = picker({
 
 function RGB_BG(e, h) {BG(e, color.hsva({h: h, s: 1, v: 1}).toCSS());}
 
-// TODO
 picker.hsl = picker({
-  init: function() {},
-  xy: function() {},
-  z: function() {}
+  init: function(col, xy, z) {
+    var ret = color.hsla(col);
+
+    this.xy(ret, {x: ret.h(), y: 1 - ret.s()}, xy, z);
+    this.z(ret, ret.l(), xy, z);
+
+    return ret;
+  },
+  xy: function(col, p, xy, z) {
+    X(xy.pointer, p.x);
+    Y(xy.pointer, p.y);
+    RGB_BG(z.background, p.x);
+
+    return col.h(p.x).s(1 - p.y);
+  },
+  z: function(col, v, xy, z) {
+    Y(z.pointer, v);
+
+    return col.l(1 - v);
+  }
 });
 
 /* extras */
