@@ -52,10 +52,21 @@
         return elem;
     }
 
+    function X(p, a) {p.style.left = clamp(a * 100, 0, 100) + '%';}
+    function Y(p, a) {p.style.top = clamp(a * 100, 0, 100) + '%';}
+    function BG(e, c) {e.style.background = c;}
+
+    function clamp(a, minValue, maxValue) {
+        return Math.min(Math.max(a, minValue), maxValue);
+    }
+
     return {
         e: e,
         div: div,
         partial: partial,
-        labelInput: labelInput
+        labelInput: labelInput,
+        X: X,
+        Y: Y,
+        BG: BG
     };
 }));

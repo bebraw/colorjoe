@@ -17,6 +17,7 @@ module.exports = function(grunt) {
               'node_modules/drag.js/src/drag.js',
               'node_modules/onecolor/one-color-all-debug.js',
               'src/elemutils.js',
+              'src/extras.js',
               'src/colorjoe.js'],
         dest: 'dist/colorjoe.js'
       }

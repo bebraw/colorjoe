@@ -1,9 +1,9 @@
 (function(root, factory) {
   if(typeof define === 'function' && define.amd)
-    // XXX: missing one-color (require AMD support to work!)
-    define(['./drag', './elemutils'], factory);
-  else root.colorjoe = factory(root.ONECOLOR, root.drag, root.elemutils);
-}(this, function(onecolor, drag, utils) {
+    define(['./onecolor', './drag', './elemutils', './extras'], factory);
+  else root.colorjoe = factory(root.ONECOLOR, root.drag, root.elemutils,
+    root.colorjoeextras);
+}(this, function(onecolor, drag, utils, extras) {
 var picker = function(cbs) {
   if(!all(isFunction, [cbs.init, cbs.xy, cbs.z]))
     return console.warn('colorjoe: missing cb');
@@ -29,13 +29,13 @@ picker.rgb = picker({
     return ret;
   },
   xy: function(col, p, xy, z) {
-    X(xy.pointer, p.x);
-    Y(xy.pointer, p.y);
+    utils.X(xy.pointer, p.x);
+    utils.Y(xy.pointer, p.y);
 
     return col.saturation(p.x).value(1 - p.y);
   },
   z: function(col, v, xy, z) {
-    Y(z.pointer, v);
+    utils.Y(z.pointer, v);
     RGB_BG(xy.background, v);
 
     return col.hue(v);
@@ -52,132 +52,24 @@ picker.hsl = picker({
     return ret;
   },
   xy: function(col, p, xy, z) {
-    X(xy.pointer, p.x);
-    Y(xy.pointer, p.y);
+    utils.X(xy.pointer, p.x);
+    utils.Y(xy.pointer, p.y);
     RGB_BG(z.background, p.x);
 
     return col.hue(p.x).saturation(1 - p.y);
   },
   z: function(col, v, xy, z) {
-    Y(z.pointer, v);
+    utils.Y(z.pointer, v);
 
     return col.lightness(1 - v);
   }
 });
 
-/* extras */
-function currentColor(p) {
-  var e = utils.div('currentColor', p);
-
-  return {
-    change: function(col) {
-      BG(e, col.cssa());
-    }
-  };
-}
-
-// TODO: alpha?
-function fields(cs, fac, fix) {
-  fac = fac || 255;
-  fix = fix >= 0? fix: 2;
-  var methods = {
-    R: 'red',
-    G: 'green',
-    B: 'blue',
-    H: 'hue',
-    S: 'saturation',
-    V: 'value',
-    L: 'lightness',
-    C: 'cyan',
-    M: 'magenta',
-    Y: 'yellow',
-    K: 'black'
-  };
-  var inputLen = ('' + fac).length + fix;
-  inputLen = fix? inputLen + 1: inputLen;
-  var chg = false; // XXX
-
-  var initials = cs.split('').map(function(n) {return n.toUpperCase();});
-
-  if(['RGB', 'HSL', 'HSV', 'CMYK'].indexOf(cs) < 0)
-    return console.warn('Invalid field names', cs);
-
-  return function(p, joe) {
-    var c = utils.div('colorFields', p);
-    var elems = initials.map(function(n, i) {
-      var e = utils.labelInput('color ' + methods[n], n, c, inputLen);
-      e.input.onkeyup = update;
-
-      return {name: n, e: e};
-    });
-
-    function update() {
-      var col = [];
-
-      elems.forEach(function(o) {col.push(o.e.input.value / fac);});
-
-      chg = true;
-      joe.set(construct(onecolor[cs], col));
-    }
-
-    return {
-      change: function(col) {
-        if(!chg)
-          elems.forEach(function(o) {
-            o.e.input.value = (col[methods[o.name]]() * fac).toFixed(fix);
-          });
-        chg = false;
-      }
-    };
-  };
-}
-
-// http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
-function construct(constructor, args) {
-  function F() {
-    return constructor.apply(this, args);
-  }
-  F.prototype = constructor.prototype;
-  return new F();
-}
-
-function hex(p, joe) {
-  var e = utils.labelInput('hex', '', p, 6);
-  var chg = false; // XXX
-
-  e.input.onkeyup = function(elem) {
-    chg = true;
-    joe.set('#' + pad(elem.target.value, 6, '0'));
-  };
-
-  return {
-    change: function(col) {
-      if(!chg) e.input.value = col.hex().slice(1);
-      chg = false;
-    }
-  };
-}
-
-function pad(a, n, c) {
-  var ret = a;
-
-  for(var i = a.length, len = n; i < n; i++) ret += c;
-
-  return ret;
-}
-
-picker.extras = {
-  currentColor: currentColor,
-  fields: fields,
-  hex: hex
-};
+picker.extras = extras;
 
 return picker;
 
-function RGB_BG(e, h) {BG(e, new onecolor.HSV(h, 1, 1).cssa());}
-function X(p, a) {p.style.left = clamp(a * 100, 0, 100) + '%';}
-function Y(p, a) {p.style.top = clamp(a * 100, 0, 100) + '%';}
-function BG(e, c) {e.style.background = c;}
+function RGB_BG(e, h) {utils.BG(e, new onecolor.HSV(h, 1, 1).cssa());}
 
 function setup(o) {
   if(!o.e) return console.warn('colorjoe: missing element');
@@ -288,9 +180,6 @@ function setupExtras(p, joe, extras) {
 }
 
 function all(cb, a) {return a.map(cb).filter(id).length == a.length;}
-function clamp(a, minValue, maxValue) {
-    return Math.min(Math.max(a, minValue), maxValue);
-}
 function isString(o) {return typeof(o) === 'string';}
 function isFunction(input) {return typeof input === "function";}
 function id(a) {return a;}

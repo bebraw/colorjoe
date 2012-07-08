@@ -964,93 +964,40 @@ ONECOLOR.installMethod('toAlpha', function (color) {
         return elem;
     }
 
+    function X(p, a) {p.style.left = clamp(a * 100, 0, 100) + '%';}
+    function Y(p, a) {p.style.top = clamp(a * 100, 0, 100) + '%';}
+    function BG(e, c) {e.style.background = c;}
+
+    function clamp(a, minValue, maxValue) {
+        return Math.min(Math.max(a, minValue), maxValue);
+    }
+
     return {
         e: e,
         div: div,
         partial: partial,
-        labelInput: labelInput
+        labelInput: labelInput,
+        X: X,
+        Y: Y,
+        BG: BG
     };
 }));
 
 (function(root, factory) {
   if(typeof define === 'function' && define.amd)
-    // XXX: missing one-color (require AMD support to work!)
-    define(['./drag', './elemutils'], factory);
-  else root.colorjoe = factory(root.ONECOLOR, root.drag, root.elemutils);
-}(this, function(onecolor, drag, utils) {
-var picker = function(cbs) {
-  if(!all(isFunction, [cbs.init, cbs.xy, cbs.z]))
-    return console.warn('colorjoe: missing cb');
-
-  return function(element, initialColor, extras) {
-    return setup({
-      e: element,
-      color: initialColor,
-      cbs: cbs,
-      extras: extras
-    });
-  };
-};
-
-/* pickers */
-picker.rgb = picker({
-  init: function(col, xy, z) {
-    var ret = onecolor(col).hsl();
-
-    this.xy(ret, {x: ret.saturation(), y: 1 - ret.value()}, xy, z);
-    this.z(ret, ret.hue(), xy, z);
-
-    return ret;
-  },
-  xy: function(col, p, xy, z) {
-    X(xy.pointer, p.x);
-    Y(xy.pointer, p.y);
-
-    return col.saturation(p.x).value(1 - p.y);
-  },
-  z: function(col, v, xy, z) {
-    Y(z.pointer, v);
-    RGB_BG(xy.background, v);
-
-    return col.hue(v);
-  }
-});
-
-picker.hsl = picker({
-  init: function(col, xy, z) {
-    var ret = onecolor(col).hsl();
-
-    this.xy(ret, {x: ret.hue(), y: 1 - ret.saturation()}, xy, z);
-    this.z(ret, 1 - ret.lightness(), xy, z);
-
-    return ret;
-  },
-  xy: function(col, p, xy, z) {
-    X(xy.pointer, p.x);
-    Y(xy.pointer, p.y);
-    RGB_BG(z.background, p.x);
-
-    return col.hue(p.x).saturation(1 - p.y);
-  },
-  z: function(col, v, xy, z) {
-    Y(z.pointer, v);
-
-    return col.lightness(1 - v);
-  }
-});
-
-/* extras */
+    define(['./onecolor', './elemutils'], factory);
+  else root.colorjoeextras = factory(root.ONECOLOR, root.elemutils);
+}(this, function(onecolor, utils) {
 function currentColor(p) {
   var e = utils.div('currentColor', p);
 
   return {
     change: function(col) {
-      BG(e, col.cssa());
+      utils.BG(e, col.cssa());
     }
   };
 }
 
-// TODO: alpha?
 function fields(cs, fac, fix) {
   fac = fac || 255;
   fix = fix >= 0? fix: 2;
@@ -1140,18 +1087,85 @@ function pad(a, n, c) {
   return ret;
 }
 
-picker.extras = {
+return {
   currentColor: currentColor,
   fields: fields,
   hex: hex
 };
+}));
+
+(function(root, factory) {
+  if(typeof define === 'function' && define.amd)
+    define(['./onecolor', './drag', './elemutils', './extras'], factory);
+  else root.colorjoe = factory(root.ONECOLOR, root.drag, root.elemutils,
+    root.colorjoeextras);
+}(this, function(onecolor, drag, utils, extras) {
+var picker = function(cbs) {
+  if(!all(isFunction, [cbs.init, cbs.xy, cbs.z]))
+    return console.warn('colorjoe: missing cb');
+
+  return function(element, initialColor, extras) {
+    return setup({
+      e: element,
+      color: initialColor,
+      cbs: cbs,
+      extras: extras
+    });
+  };
+};
+
+/* pickers */
+picker.rgb = picker({
+  init: function(col, xy, z) {
+    var ret = onecolor(col).hsl();
+
+    this.xy(ret, {x: ret.saturation(), y: 1 - ret.value()}, xy, z);
+    this.z(ret, ret.hue(), xy, z);
+
+    return ret;
+  },
+  xy: function(col, p, xy, z) {
+    utils.X(xy.pointer, p.x);
+    utils.Y(xy.pointer, p.y);
+
+    return col.saturation(p.x).value(1 - p.y);
+  },
+  z: function(col, v, xy, z) {
+    utils.Y(z.pointer, v);
+    RGB_BG(xy.background, v);
+
+    return col.hue(v);
+  }
+});
+
+picker.hsl = picker({
+  init: function(col, xy, z) {
+    var ret = onecolor(col).hsl();
+
+    this.xy(ret, {x: ret.hue(), y: 1 - ret.saturation()}, xy, z);
+    this.z(ret, 1 - ret.lightness(), xy, z);
+
+    return ret;
+  },
+  xy: function(col, p, xy, z) {
+    utils.X(xy.pointer, p.x);
+    utils.Y(xy.pointer, p.y);
+    RGB_BG(z.background, p.x);
+
+    return col.hue(p.x).saturation(1 - p.y);
+  },
+  z: function(col, v, xy, z) {
+    utils.Y(z.pointer, v);
+
+    return col.lightness(1 - v);
+  }
+});
+
+picker.extras = extras;
 
 return picker;
 
-function RGB_BG(e, h) {BG(e, new onecolor.HSV(h, 1, 1).cssa());}
-function X(p, a) {p.style.left = clamp(a * 100, 0, 100) + '%';}
-function Y(p, a) {p.style.top = clamp(a * 100, 0, 100) + '%';}
-function BG(e, c) {e.style.background = c;}
+function RGB_BG(e, h) {utils.BG(e, new onecolor.HSV(h, 1, 1).cssa());}
 
 function setup(o) {
   if(!o.e) return console.warn('colorjoe: missing element');
@@ -1261,42 +1275,7 @@ function setupExtras(p, joe, extras) {
   });
 }
 
-function xyslider(o) {
-  var div = utils.div;
-  var twod = div(o['class'], o.parent);
-  var pointer = div('pointer', twod);
-  div('shape shape1', pointer);
-  div('shape shape2', pointer);
-  div('bg bg1', twod);
-  div('bg bg2', twod);
-
-  drag(twod, o.cbs);
-
-  return {
-    background: twod,
-    pointer: pointer
-  };
-}
-
-function slider(o) {
-  var div = utils.div;
-  var oned = div(o['class'], o.parent);
-  var pointer = div('pointer', oned);
-  div('shape', pointer);
-  div('bg', oned);
-
-  drag(oned, o.cbs);
-
-  return {
-    background: oned,
-    pointer: pointer
-  };
-}
-
 function all(cb, a) {return a.map(cb).filter(id).length == a.length;}
-function clamp(a, minValue, maxValue) {
-    return Math.min(Math.max(a, minValue), maxValue);
-}
 function isString(o) {return typeof(o) === 'string';}
 function isFunction(input) {return typeof input === "function";}
 function id(a) {return a;}
