@@ -86,7 +86,7 @@ or CMYK). In addition it takes maximum value (defaults to 255) and a fix value
 
 ## Hacking
 
-Use [grunt](http://gruntjs.com/) command to build prepackaged files in `dist/`.
+Download the dependencies using `npm` (npm install) and then use [grunt](http://gruntjs.com/) to build prepackaged files in `dist/`.
 
 ## License
 
