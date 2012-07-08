@@ -48,12 +48,12 @@ function fields(cs, fac, fix) {
     });
 
     function update() {
-      var col = [];
+      var col = [cs];
 
       elems.forEach(function(o) {col.push(o.e.input.value / fac);});
 
       chg = true;
-      joe.set(construct(onecolor[cs], col));
+      joe.set(onecolor(col));
     }
 
     return {
@@ -66,15 +66,6 @@ function fields(cs, fac, fix) {
       }
     };
   };
-}
-
-// http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
-function construct(constructor, args) {
-  function F() {
-    return constructor.apply(this, args);
-  }
-  F.prototype = constructor.prototype;
-  return new F();
 }
 
 function hex(p, joe) {

@@ -266,6 +266,9 @@ function usedStyle(element, property) {
 /*global define*/
 var installedColorSpaces = [],
     namedColors = {},
+    undef = function (obj) {
+        return typeof obj === 'undefined';
+    },
     channelRegExp = /\s*(\.\d+|\d+(?:\.\d+)?)(%)?\s*/,
     alphaChannelRegExp = /\s*(\.\d+|\d+(?:\.\d+)?)\s*/,
     cssColorRegExp = new RegExp(
@@ -279,14 +282,14 @@ var installedColorSpaces = [],
 
 function ONECOLOR (obj) {
     if (Object.prototype.toString.apply(obj) === '[object Array]') {
-        if (obj[0].length === 4) {
+        if (obj.length === 4) {
             // Assumed 4 element int RGB array from canvas with all channels [0;255]
             return new ONECOLOR.RGB(obj[0] / 255, obj[1] / 255, obj[2] / 255, obj[3] / 255);
         } else {
             // Assumed destringified array from one.color.JSON()
             return new ONECOLOR[obj[0]](obj.slice(1, obj.length));
         }
-    } else if (obj.charCodeAt) {
+    } else if (typeof obj === 'string') {
         var lowerCased = obj.toLowerCase();
         if (namedColors[lowerCased]) {
             obj = '#' + namedColors[lowerCased];
@@ -295,12 +298,12 @@ function ONECOLOR (obj) {
         var matchCssSyntax = obj.match(cssColorRegExp);
         if (matchCssSyntax) {
             var colorSpaceName = matchCssSyntax[1].toUpperCase(),
-                alpha = typeof matchCssSyntax[8] === 'undefined' ? matchCssSyntax[8] : parseFloat(matchCssSyntax[8]),
+                alpha = undef(matchCssSyntax[8]) ? matchCssSyntax[8] : parseFloat(matchCssSyntax[8]),
                 hasHue = colorSpaceName[0] === 'H',
                 firstChannelDivisor = matchCssSyntax[3] ? 100 : (hasHue ? 360 : 255),
                 secondChannelDivisor = (matchCssSyntax[5] || hasHue) ? 100 : 255,
                 thirdChannelDivisor = (matchCssSyntax[7] || hasHue) ? 100 : 255;
-            if (typeof ONECOLOR[colorSpaceName] === 'undefined') {
+            if (undef(ONECOLOR[colorSpaceName])) {
                 throw new Error("one.color." + colorSpaceName + " is not installed.");
             }
             return new ONECOLOR[colorSpaceName](
@@ -368,7 +371,7 @@ function installColorSpace(colorSpaceName, propertyNames, config) {
     prototype.isColor = true;
 
     prototype.equals = function (otherColor, epsilon) {
-        if (typeof epsilon === 'undefined') {
+        if (undef(epsilon)) {
             epsilon = 1e-10;
         }
 
@@ -476,7 +479,7 @@ if (typeof module !== 'undefined') {
     module.exports = ONECOLOR;
 } else {
     // Browser
-    if (typeof define === 'function' && typeof define.amd !== 'undefined') {
+    if (typeof define === 'function' && !undef(define.amd)) {
         define([], function () {
             return ONECOLOR;
         });
@@ -1033,12 +1036,12 @@ function fields(cs, fac, fix) {
     });
 
     function update() {
-      var col = [];
+      var col = [cs];
 
       elems.forEach(function(o) {col.push(o.e.input.value / fac);});
 
       chg = true;
-      joe.set(construct(onecolor[cs], col));
+      joe.set(onecolor(col));
     }
 
     return {
@@ -1051,15 +1054,6 @@ function fields(cs, fac, fix) {
       }
     };
   };
-}
-
-// http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
-function construct(constructor, args) {
-  function F() {
-    return constructor.apply(this, args);
-  }
-  F.prototype = constructor.prototype;
-  return new F();
 }
 
 function hex(p, joe) {
