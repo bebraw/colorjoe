@@ -104,8 +104,10 @@
   }
 .colorPicker .oned .bg {
     border: 1px solid #BBB;
+    /*
     -moz-border-radius: .3em;
     border-radius: .3em;
+    */
 }
 .colorPicker .oned .pointer {
     position: relative;
