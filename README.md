@@ -82,7 +82,7 @@ or CMYK). In addition it takes maximum value (defaults to 255) and a fix value
 * [Esa-Matti Suuronen](https://github.com/epeli) -
   [Grunt](https://github.com/cowboy/grunt) support + removeAllListeners
 * [Peter Müller](https://github.com/Munter) -
-  [one.color](https://github.com/One-com/one-color)
+  [one.color](https://github.com/One-com/one-color) + HTML tweaks
 
 ## Hacking
 
