@@ -4,7 +4,7 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     meta: {
-      version: '0.5.5',
+      version: '0.5.6',
       banner: '/*! colorjoe - v<%= meta.version %> - ' +
         '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
         '* http://bebraw.github.com/colorjoe/\n' +
