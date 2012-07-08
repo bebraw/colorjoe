@@ -46,6 +46,10 @@ joe.on("done", function(color) {
 
 The color object is from [one.color](https://github.com/One-com/one-color).
 
+Given it might be nice to trigger these events immediately, there is a specific
+`update` method. Ie. joe.on("change", function() {...}).update() would trigger
+`change` immediately. This is handy for initializing your work.
+
 ### Get and Set
 
 In addition there are `set` and `get` methods. Ie. joe.get() would return the
