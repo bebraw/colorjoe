@@ -128,9 +128,7 @@
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ff0000), color-stop(17%,#ffff00), color-stop(33%,#00ff00), color-stop(50%,#00ffff), color-stop(66%,#0000ff), color-stop(83%,#ff00ff), color-stop(100%,#ff0000));
     background: -webkit-linear-gradient(top,  #ff0000 0%,#ffff00 17%,#00ff00 33%,#00ffff 50%,#0000ff 66%,#ff00ff 83%,#ff0000 100%);
     background: -o-linear-gradient(top,  #ff0000 0%,#ffff00 17%,#00ff00 33%,#00ffff 50%,#0000ff 66%,#ff00ff 83%,#ff0000 100%);
-    background: -ms-linear-gradient(top,  #ff0000 0%,#ffff00 17%,#00ff00 33%,#00ffff 50%,#0000ff 66%,#ff00ff 83%,#ff0000 100%);
     background: linear-gradient(top,  #ff0000 0%,#ffff00 17%,#00ff00 33%,#00ffff 50%,#0000ff 66%,#ff00ff 83%,#ff0000 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff0000', endColorstr='#ff0000',GradientType=0 );
 }
 
 .colorPicker .twod .bg1 {
@@ -159,10 +157,7 @@
     background: -webkit-gradient(linear, left top, right top, color-stop(0%,#ff0000), color-stop(17%,#ffff00), color-stop(33%,#00ff00), color-stop(50%,#00ffff), color-stop(66%,#0000ff), color-stop(83%,#ff00ff), color-stop(100%,#ff0000));
     background: -webkit-linear-gradient(left, #ff0000 0%,#ffff00 17%,#00ff00 33%,#00ffff 50%,#0000ff 66%,#ff00ff 83%,#ff0000 100%);
     background: -o-linear-gradient(left, #ff0000 0%,#ffff00 17%,#00ff00 33%,#00ffff 50%,#0000ff 66%,#ff00ff 83%,#ff0000 100%);
-    background: -ms-linear-gradient(left, #ff0000 0%,#ffff00 17%,#00ff00 33%,#00ffff 50%,#0000ff 66%,#ff00ff 83%,#ff0000 100%);
     background: linear-gradient(left, #ff0000 0%,#ffff00 17%,#00ff00 33%,#00ffff 50%,#0000ff 66%,#ff00ff 83%,#ff0000 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff0000', endColorstr='#ff0000',GradientType=1 );
-
 }
 
 #hslPicker .twod .bg2 {
@@ -181,8 +176,6 @@
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(50%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,1)));
     background: -webkit-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(0,0,0,0),rgba(0,0,0,1) 100%);
     background: -o-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(0,0,0,0) 50%,rgba(0,0,0,1) 100%);
-    background: -ms-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(0,0,0,0) 50%,rgba(0,0,0,1) 100%);
     background: linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(0,0,0,0) 50%,rgba(0,0,0,1) 100%);
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FFFFFF', endColorstr='#000000',GradientType=0 ); /* XXX: figure out how to add the middle color */
 }
 
