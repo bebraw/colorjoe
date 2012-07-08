@@ -11,34 +11,8 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/pygment_trac.css">
     <link rel="stylesheet" href="css/colorjoe.css">
-    <script src="js/scale.fix.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
-  <script src="dist/colorjoe.js"></script>
-  <script type="text/javascript">
-  window.onload = function() {
-      var val = document.getElementById('rgbValue');
-      colorjoe.rgb('rgbPicker', 'black').on('change', function(c) {
-          val.innerHTML = c.css();
-      }).update();
-      colorjoe.rgb('extraPicker', '#113c38', [
-          colorjoe.extras.currentColor,
-          colorjoe.extras.fields('RGB', 255, 0),
-          colorjoe.extras.fields('HSL', 100),
-          colorjoe.extras.hex
-      ]);
-      colorjoe.hsl('hslPicker', '#113c38', [
-          colorjoe.extras.currentColor,
-          colorjoe.extras.fields('HSL', 100),
-          colorjoe.extras.fields('CMYK', 100),
-          colorjoe.extras.hex
-      ]);
-  }
-  </script>
   </head>
   <body>
     <div class="wrapper">
@@ -87,6 +61,68 @@
       <p>Project maintained by <a href="https://github.com/bebraw">bebraw</a></p>
       <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
     </footer>
-    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script type="text/javascript">
+      (function () {
+          defer = (function (document, script) {
+              var scripts = {},
+                  firstScript = document.getElementsByTagName(script)[0];
+
+              return function (url, callback) {
+                  var inc;
+
+                  if (typeof scripts[url] === 'undefined') {
+                      inc = document.createElement(script);
+                      inc.async = true;
+                      inc.src = url;
+                      if (callback) {
+                          inc.onload = function () {
+                              if (!inc.onloadDone) {
+                                  inc.onloadDone = true;
+                                  callback();
+                              }
+                          };
+                          inc.onreadystatechange = function () {
+                              if (inc.readyState === "loaded" || inc.readyState === "complete") {
+                                  inc.onload();
+                              }
+                          };
+                      }
+                      firstScript.parentNode.insertBefore(inc, firstScript);
+                      scripts[url] = inc;
+                  } else {
+                      if (callback) {
+                          callback();
+                      }
+                  }
+              };
+          }(document, 'script'));
+
+          defer('js/scale.fix.js', function() {
+              fixScale(document);
+          });
+          defer('dist/colorjoe.js', function () {
+              var val = document.getElementById('rgbValue');
+              colorjoe.rgb('rgbPicker', 'black').on('change', function(c) {
+                  val.innerHTML = c.css();
+              }).update();
+              colorjoe.rgb('extraPicker', '#113c38', [
+                  colorjoe.extras.currentColor,
+                  colorjoe.extras.fields('RGB', 255, 0),
+                  colorjoe.extras.fields('HSL', 100),
+                  colorjoe.extras.hex
+              ]);
+              colorjoe.hsl('hslPicker', '#113c38', [
+                  colorjoe.extras.currentColor,
+                  colorjoe.extras.fields('HSL', 100),
+                  colorjoe.extras.fields('CMYK', 100),
+                  colorjoe.extras.hex
+              ]);
+          });
+      }());
+    </script>
   </body>
 </html>
