@@ -187,7 +187,7 @@ function setup(o) {
 
   var cbs = o.cbs;
 
-  var xy = xyslider({
+  var xy = drag.xyslider({
     parent: e,
     'class': 'twod',
     cbs: {
@@ -202,7 +202,7 @@ function setup(o) {
     changed();
   }
 
-  var z = slider({
+  var z = drag.slider({
     parent: e,
     'class': 'oned',
     cbs: {
@@ -285,38 +285,6 @@ function setupExtras(p, joe, extras) {
 
     for(var k in cbs) joe.on(k, cbs[k]);
   });
-}
-
-function xyslider(o) {
-  var div = utils.div;
-  var twod = div(o['class'], o.parent);
-  var pointer = div('pointer', twod);
-  div('shape shape1', pointer);
-  div('shape shape2', pointer);
-  div('bg bg1', twod);
-  div('bg bg2', twod);
-
-  drag(twod, o.cbs);
-
-  return {
-    background: twod,
-    pointer: pointer
-  };
-}
-
-function slider(o) {
-  var div = utils.div;
-  var oned = div(o['class'], o.parent);
-  var pointer = div('pointer', oned);
-  div('shape', pointer);
-  div('bg', oned);
-
-  drag(oned, o.cbs);
-
-  return {
-    background: oned,
-    pointer: pointer
-  };
 }
 
 function all(cb, a) {return a.map(cb).filter(id).length == a.length;}
