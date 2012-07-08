@@ -5,7 +5,7 @@
     "version": "0.5.6-wip",
 
     "dependencies": {
-        "drag.js": "== 0.3.0",
+        "drag.js": "== 0.3.1",
         "onecolor": "== 2.2.6"
     },
 

@@ -127,11 +127,17 @@ function dragTemplate(elem, cbs, down, move, up) {
 }
 
 function on(elem, evt, handler) {
-    elem.addEventListener(evt, handler, false);
+    if(elem.addEventListener)
+        elem.addEventListener(evt, handler, false);
+    else if(elem.attachEvent)
+        elem.attachEvent('on' + evt, handler);
 }
 
 function off(elem, evt, handler) {
-    elem.removeEventListener(evt, handler, false);
+    if(elem.removeEventListener)
+        elem.removeEventListener(evt, handler, false);
+    else if(elem.detachEvent)
+        elem.detachEvent('on' + evt, handler);
 }
 
 function getCbs(cbs) {
