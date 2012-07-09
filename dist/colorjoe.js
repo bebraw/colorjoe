@@ -224,7 +224,7 @@ function findPos(e) {
 // http://javascript.about.com/library/blmousepos.htm
 function cursorX(elem, evt) {
     if(isFixed(elem)) {
-        var bodyLeft = parseInt(document.defaultView.getComputedStyle(document.body, "").marginLeft, 10) - calc(elem, 'scrollLeft') + elem.style.marginLeft;
+        var bodyLeft = parseInt(document.defaultView.getComputedStyle(document.body, "").marginLeft, 10) - calc(elem, 'scrollLeft') + window.pageXOffset + elem.style.marginLeft;
 
         return evt.clientX - bodyLeft;
     }
@@ -234,7 +234,7 @@ function cursorX(elem, evt) {
 }
 function cursorY(elem, evt) {
     if(isFixed(elem)) {
-        var bodyTop = parseInt(document.defaultView.getComputedStyle(document.body, "").marginTop, 10) - calc(elem, 'scrollTop') + elem.style.marginTop;
+        var bodyTop = parseInt(document.defaultView.getComputedStyle(document.body, "").marginTop, 10) - calc(elem, 'scrollTop') + window.pageYOffset + elem.style.marginTop;
 
         return evt.clientY - bodyTop;
     }
