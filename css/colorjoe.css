@@ -75,6 +75,7 @@
 .colorPicker .twod .pointer {
     position: relative;
     z-index: 2;
+    width: 8px;
 }
 .colorPicker .twod .pointer .shape {
     position: absolute;
