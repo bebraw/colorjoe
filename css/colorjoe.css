@@ -59,6 +59,9 @@
 .colorPicker .oned, .colorPicker .oned .bg {
     height: 240px;
 }
+.colorPicker .oned, .colorPicker .oned .bg, .colorPicker .oned .pointer .shape {
+    width: 20px;
+}
 
 .colorPicker .twod .bg {
     position: absolute;
@@ -99,9 +102,7 @@
     float: left;
     margin: 0.5em;
 }
-.colorPicker .oned, .colorPicker .oned .bg, .colorPicker .oned .pointer .shape {
-    width: 20px;
-  }
+
 .colorPicker .oned .bg {
     border: 1px solid #BBB;
     /*
