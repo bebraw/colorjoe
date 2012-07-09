@@ -108,7 +108,8 @@
           });
           defer('dist/colorjoe.js', function () {
               var val = document.getElementById('rgbValue');
-              colorjoe.rgb('rgbPicker', 'black').on('change', function(c) {
+              // undefined or any other erroneous value results as black
+              colorjoe.rgb('rgbPicker', undefined).on('change', function(c) {
                   val.innerHTML = c.css();
               }).update();
               colorjoe.rgb('extraPicker', '#113c38', [

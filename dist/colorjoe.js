@@ -1,4 +1,4 @@
-/*! colorjoe - v0.5.7 - 2012-07-08
+/*! colorjoe - v0.5.7 - 2012-07-09
 * http://bebraw.github.com/colorjoe/
 * Copyright (c) 2012 Juho Vepsäläinen; Licensed MIT */
 
@@ -1205,7 +1205,7 @@ function setup(o) {
     changed();
   }
 
-  var col = cbs.init(o.color, xy, z);
+  var col = cbs.init(getColor(o.color), xy, z);
   var listeners = {change: [], done: []};
 
   function changed() {
@@ -1230,7 +1230,7 @@ function setup(o) {
     },
     set: function(c) {
       var oldCol = this.get();
-      col = cbs.init(c, xy, z);
+      col = cbs.init(getColor(c), xy, z);
 
       if(oldCol.hex() != col.hex()) changed();
 
@@ -1260,6 +1260,12 @@ function setup(o) {
   changed();
 
   return ob;
+}
+
+function getColor(c) {
+   var ret = onecolor(c);
+
+   return ret? ret: onecolor('black');
 }
 
 function setupExtras(p, joe, extras) {
