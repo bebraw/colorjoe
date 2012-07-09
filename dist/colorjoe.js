@@ -224,7 +224,7 @@ function findPos(e) {
 // http://javascript.about.com/library/blmousepos.htm
 function cursorX(elem, evt) {
     if(isFixed(elem)) {
-        var bodyLeft = parseInt(document.defaultView.getComputedStyle(document.body, "").marginLeft, 10);
+        var bodyLeft = parseInt(document.defaultView.getComputedStyle(document.body, "").marginLeft, 10) - calc(elem, 'scrollLeft') + elem.style.marginLeft;
 
         return evt.clientX - bodyLeft;
     }
@@ -234,13 +234,24 @@ function cursorX(elem, evt) {
 }
 function cursorY(elem, evt) {
     if(isFixed(elem)) {
-        var bodyTop = parseInt(document.defaultView.getComputedStyle(document.body, "").marginTop, 10);
+        var bodyTop = parseInt(document.defaultView.getComputedStyle(document.body, "").marginTop, 10) - calc(elem, 'scrollTop') + elem.style.marginTop;
 
         return evt.clientY - bodyTop;
     }
     if(evt.pageY) return evt.pageY;
     else if(evt.clientY)
         return evt.clientY + document.body.scrollTop;
+}
+
+function calc(element, prop) {
+    var ret = 0;
+
+    while (element.nodeName != "HTML") {
+        ret += element[prop];
+        element = element.parentNode;
+    }
+
+    return ret;
 }
 
 // http://www.velocityreviews.com/forums/t942580-mouse-position-in-both-fixed-and-relative-positioning.html
