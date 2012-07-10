@@ -172,7 +172,11 @@ function setup(o) {
 function getColor(c) {
    var ret = onecolor(c);
 
-   return ret? ret: onecolor('black');
+   if(ret) return ret;
+
+   if(isDefined(c)) console.warn('Passed invalid color to colorjoe, using black instead');
+
+   return onecolor('black');
 }
 
 function setupExtras(p, joe, extras) {
@@ -189,7 +193,9 @@ function setupExtras(p, joe, extras) {
 }
 
 function all(cb, a) {return a.map(cb).filter(id).length == a.length;}
+
 function isString(o) {return typeof(o) === 'string';}
+function isDefined(input) {return typeof input !== "undefined";}
 function isFunction(input) {return typeof input === "function";}
 function id(a) {return a;}
 }));
