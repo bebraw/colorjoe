@@ -90,7 +90,10 @@ function setup(o) {
   });
 
   function changeXY(p) {
-    col = cbs.xy(col, p, xy, z);
+    col = cbs.xy(col, {
+      x: utils.clamp(p.x, 0, 1),
+      y: utils.clamp(p.y, 0, 1)
+    }, xy, z);
     changed();
   }
 
@@ -105,7 +108,7 @@ function setup(o) {
   });
 
   function changeZ(p) {
-    col = cbs.z(col, p.y, xy, z);
+    col = cbs.z(col, utils.clamp(p.y, 0, 1), xy, z);
     changed();
   }
 

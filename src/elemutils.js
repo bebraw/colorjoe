@@ -61,6 +61,7 @@
     }
 
     return {
+        clamp: clamp,
         e: e,
         div: div,
         partial: partial,
