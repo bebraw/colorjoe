@@ -112,17 +112,24 @@ function setup(o) {
     changed();
   }
 
-  var col = cbs.init(getColor(o.color), xy, z);
+  // Initial color
+  var previous = getColor(o.color);
+  var col = cbs.init(previous, xy, z);
   var listeners = {change: [], done: []};
 
   function changed() {
-    for(var i = 0, len = listeners.change.length; i < len; i++)
+    for(var i = 0, len = listeners.change.length; i < len; i++) {
       listeners.change[i](col);
+    }
   }
 
   function done() {
-    for(var i = 0, len = listeners.done.length; i < len; i++)
+    // Do not call done callback if the color did not change
+    if (previous.equals(col)) return;
+    for(var i = 0, len = listeners.done.length; i < len; i++) {
       listeners.done[i](col);
+    }
+    previous = col;
   }
 
   var ob = {
