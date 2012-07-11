@@ -1,6 +1,6 @@
 /*! colorjoe - v0.6.2-wip - 2012-07-11
 * http://bebraw.github.com/colorjoe/
-* Copyright (c) 2012 Juho Vepsäläinen; Licensed MIT */
+* Copyright (c) 2012 Juho Vepsalainen; Licensed MIT */
 
 /*! drag.js - v0.3.8 - 2012-07-11
 * http://bebraw.github.com/drag.js/

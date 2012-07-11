@@ -9,7 +9,7 @@ module.exports = function(grunt) {
         '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
         '* http://bebraw.github.com/colorjoe/\n' +
         '* Copyright (c) <%= grunt.template.today("yyyy") %> ' +
-        'Juho Vepsäläinen; Licensed MIT */'
+        'Juho Vepsalainen; Licensed MIT */'
     },
     concat: {
       dist: {
