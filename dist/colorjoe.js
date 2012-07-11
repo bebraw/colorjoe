@@ -1,8 +1,8 @@
-/*! colorjoe - v0.6.1 - 2012-07-11
+/*! colorjoe - v0.6.1-wip - 2012-07-11
 * http://bebraw.github.com/colorjoe/
 * Copyright (c) 2012 Juho Vepsäläinen; Licensed MIT */
 
-/*! drag.js - v0.3.6 - 2012-07-11
+/*! drag.js - v0.3.7 - 2012-07-11
 * http://bebraw.github.com/drag.js/
 * Copyright (c) 2012 Juho Vepsalainen; Licensed MIT */
 
@@ -122,11 +122,6 @@ function dragTemplate(elem, cbs, down, move, up) {
         on(document, up, upHandler);
 
         callCb(beginCb, elem, e);
-    });
-    on(elem, up, function(e) {
-        dragging = false;
-
-        callCb(endCb, elem, e);
     });
 }
 
@@ -1224,17 +1219,24 @@ function setup(o) {
     changed();
   }
 
-  var col = cbs.init(getColor(o.color), xy, z);
+  // Initial color
+  var previous = getColor(o.color);
+  var col = cbs.init(previous, xy, z);
   var listeners = {change: [], done: []};
 
   function changed() {
-    for(var i = 0, len = listeners.change.length; i < len; i++)
+    for(var i = 0, len = listeners.change.length; i < len; i++) {
       listeners.change[i](col);
+    }
   }
 
   function done() {
-    for(var i = 0, len = listeners.done.length; i < len; i++)
+    // Do not call done callback if the color did not change
+    if (previous.equals(col)) return;
+    for(var i = 0, len = listeners.done.length; i < len; i++) {
       listeners.done[i](col);
+    }
+    previous = col;
   }
 
   var ob = {
