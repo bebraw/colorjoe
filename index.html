@@ -55,6 +55,8 @@
 
         <h2>HSL Picker with Extras</h2>
 
+        <div id="hslaValue"></div>
+
         <div id="hslPicker"></div>
 
       </section>
@@ -108,6 +110,7 @@
           });
           defer('dist/colorjoe.js', function () {
               var val = document.getElementById('rgbValue');
+              var hVal = document.getElementById('hslaValue');
 
               colorjoe.registerExtra('text', function(p, joe, o) {
                   e(p, o.text? o.text: 'text')
@@ -130,11 +133,14 @@
                   ['text', {text: 'param demo'}]
               ]);
               colorjoe.hsl('hslPicker', '#113c38', [
+                  'alpha',
                   'currentColor',
-                  ['fields', {space: 'HSL', limit: 100}],
-                  ['fields', {space: 'CMYK', limit: 100}],
+                  ['fields', {space: 'HSLA', limit: 100}],
+                  ['fields', {space: 'CMYKA', limit: 100}],
                   'hex'
-              ]);
+              ]).on('change', function(c) {
+                  hVal.innerHTML = 'Alpha: ' + c.alpha().toFixed(2);
+              }).update();
           });
       }());
     </script>

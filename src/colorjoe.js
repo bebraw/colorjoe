@@ -165,7 +165,17 @@ function setup(o) {
       var oldCol = this.get();
       col = cbs.init(getColor(c), xy, z);
 
-      if(oldCol.hex() != col.hex()) this.update();
+      if(!oldCol.equals(col)) this.update();
+
+      return this;
+    },
+    getAlpha: function() {
+      return col.alpha();
+    },
+    setAlpha: function(v) {
+      col = col.alpha(v);
+
+      this.update();
 
       return this;
     },
@@ -218,7 +228,7 @@ function setupExtras(p, joe, extras) {
   var name;
   var params;
 
-  extras.forEach(function(e) {
+  extras.forEach(function(e, i) {
     if(isArray(e)) {
       name = e[0];
       params = e.length > 1? e[1]: {};
@@ -230,7 +240,7 @@ function setupExtras(p, joe, extras) {
     extra = name in picker._extras? picker._extras[name]: null;
 
     if(extra) {
-      cbs = extra(c, extraProxy(joe, name), params);
+      cbs = extra(c, extraProxy(joe, name + i), params);
       for(var k in cbs) joe.on(k, cbs[k], name);
     }
   });

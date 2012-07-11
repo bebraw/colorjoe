@@ -1,4 +1,4 @@
-#rgbValue {
+#rgbValue, #hslaValue {
     float: right;
 }
 
@@ -16,7 +16,12 @@
     margin: 0.5em;
 }
 
+.colorPicker .extras .currentColorContainer {
+    overflow: hidden;
+}
+
 .colorPicker .extras .currentColor {
+    float: right;
     width: 65px;
     height: 30px;
     border: 1px solid #BBB;
@@ -175,3 +180,10 @@
     background: linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(0,0,0,0) 50%,rgba(0,0,0,1) 100%);
 }
 
+#hslPicker .extras {
+    width: 100px;
+}
+
+#hslPicker .oned.alpha {
+    margin: 0;
+}

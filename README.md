@@ -64,17 +64,19 @@ provides a few extras. The following example shows how to use them:
 ```javascript
 var joe = colorjoe.hsl('hslPicker', 'red', [
     'currentColor',
+    'alpha',
     ['fields', {space: 'HSL', limit: 255, fix: 0},
     'hex'
 ]);
 ```
 
 The code above would generate a HSL picker that shows in addition the currently
-selected color, HSL input fields and a hex field.
+selected color, alpha slider, HSL input fields and a hex field.
 
 As you can see `fields` has been defined using an array. This array contains
 the name of the extra and then parameters passed to inside an object. In this
-case the extra accepts name of a color space (RGB, HSL, HSV or CMYK). In
+case the extra accepts name of a color space (RGB, HSL, HSV or CMYK). If you
+append `A` to the color space, it will show a control for alpha too. In
 addition it takes a limit value (defaults to 255) and a fix value
 (defaults to 0). fix represents the amount of numbers shown after decimal.
 
