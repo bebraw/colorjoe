@@ -116,13 +116,15 @@ function setup(o) {
   var listeners = {change: [], done: []};
 
   function changed() {
-    for(var i = 0, len = listeners.change.length; i < len; i++)
+    for(var i = 0, len = listeners.change.length; i < len; i++) {
       listeners.change[i](col);
+    }
   }
 
   function done() {
-    for(var i = 0, len = listeners.done.length; i < len; i++)
+    for(var i = 0, len = listeners.done.length; i < len; i++) {
       listeners.done[i](col);
+    }
   }
 
   var ob = {
