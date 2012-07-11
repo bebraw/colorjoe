@@ -1021,9 +1021,9 @@ ONECOLOR.installMethod('toAlpha', function (color) {
 
 (function(root, factory) {
   if(typeof define === 'function' && define.amd)
-    define(['./onecolor', './elemutils'], factory);
-  else root.colorjoeextras = factory(root.ONECOLOR, root.elemutils);
-}(this, function(onecolor, utils) {
+    define(['./elemutils'], factory);
+  else root.colorjoeextras = factory(root.elemutils);
+}(this, function(utils) {
 function currentColor(p) {
   var e = utils.div('currentColor', p);
 
@@ -1073,7 +1073,7 @@ function fields(p, joe, o) {
     elems.forEach(function(o) {col.push(o.e.input.value / fac);});
     col.push(1); // alpha
 
-    joe.set(onecolor(col));
+    joe.set(col);
   }
 
   return {
