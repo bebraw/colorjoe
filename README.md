@@ -76,7 +76,7 @@ As you can see `fields` has been defined using an array. This array contains
 the name of the extra and then parameters passed to inside an object. In this
 case the extra accepts name of a color space (RGB, HSL, HSV or CMYK). In
 addition it takes a limit value (defaults to 255) and a fix value
-(defaults to 2). fix represents the amount of numbers shown after decimal.
+(defaults to 0). fix represents the amount of numbers shown after decimal.
 
 ### Implementing Custom Extras
 

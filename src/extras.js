@@ -16,7 +16,7 @@ function currentColor(p) {
 function fields(p, joe, o) {
   var cs = o.space;
   var fac = o.limit || 255;
-  var fix = o.fix >= 0? o.fix: 2;
+  var fix = o.fix >= 0? o.fix: 0;
   var methods = {
     R: 'red',
     G: 'green',
