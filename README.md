@@ -78,6 +78,9 @@ case the extra accepts name of a color space (RGB, HSL, HSV or CMYK). In
 addition it takes a limit value (defaults to 255) and a fix value
 (defaults to 0). fix represents the amount of numbers shown after decimal.
 
+`hex` extra accepts optional `label`. If set it will show that as the input's
+label.
+
 ### Implementing Custom Extras
 
 It is possible to implement your custom extras without having to hack the core

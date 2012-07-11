@@ -1085,16 +1085,22 @@ function fields(p, joe, o) {
   };
 }
 
-function hex(p, joe) {
-  var e = utils.labelInput('hex', '', p, 6);
+function hex(p, joe, o) {
+  var e = utils.labelInput('hex', o.label || '', p, 7);
+  e.input.value = '#';
 
   e.input.onkeyup = function(elem) {
-    joe.set('#' + pad(elem.target.value, 6, '0'));
+    var val = elem.target.value;
+    val = val[0] == '#'? val: '#' + val;
+    val = pad(val, 7, '0');
+
+    joe.set(val);
   };
 
   return {
     change: function(col) {
-      e.input.value = col.hex().slice(1);
+      e.input.value = e.input.value[0] == '#'? '#': '';
+      e.input.value += col.hex().slice(1);
     }
   };
 }
