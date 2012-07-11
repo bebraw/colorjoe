@@ -210,13 +210,13 @@ function setupExtras(p, joe, extras) {
   extras.forEach(function(e) {
     if(isArray(e)) {
       name = e[0];
-      extra = name in picker._extras? picker._extras[name]: null;
       params = e.length > 1? e[1]: {};
     }
     else {
-      extra = e in picker._extras? picker._extras[e]: null;
+      name = e;
       params = {};
     }
+    extra = name in picker._extras? picker._extras[name]: null;
 
     if(extra) {
       cbs = extra(c, joe, params);
@@ -228,7 +228,7 @@ function setupExtras(p, joe, extras) {
 function all(cb, a) {return a.map(cb).filter(id).length == a.length;}
 
 function isArray(o) {
-    return Object.prototype.toString.call(o) === "[object Array]";
+  return Object.prototype.toString.call(o) === "[object Array]";
 }
 function isString(o) {return typeof(o) === 'string';}
 function isDefined(input) {return typeof input !== "undefined";}
