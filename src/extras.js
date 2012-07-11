@@ -51,6 +51,7 @@ function fields(p, joe, o) {
     var col = [cs];
 
     elems.forEach(function(o) {col.push(o.e.input.value / fac);});
+    col.push(1); // alpha
 
     chg = true;
     joe.set(onecolor(col));

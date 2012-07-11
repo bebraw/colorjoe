@@ -190,13 +190,16 @@ function setup(o) {
 }
 
 function getColor(c) {
-   var ret = onecolor(c);
+  if(!isDefined(c)) return onecolor('black');
+  if(c.isColor) return c;
 
-   if(ret) return ret;
+  var ret = onecolor(c);
 
-   if(isDefined(c)) console.warn('Passed invalid color to colorjoe, using black instead');
+  if(ret) return ret;
 
-   return onecolor('black');
+  if(isDefined(c)) console.warn('Passed invalid color to colorjoe, using black instead');
+
+  return onecolor('black');
 }
 
 function setupExtras(p, joe, extras) {
