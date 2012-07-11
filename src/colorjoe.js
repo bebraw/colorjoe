@@ -130,9 +130,15 @@ function setup(o) {
   var col = cbs.init(previous, xy, z);
   var listeners = {change: [], done: []};
 
-  function changed() {
-    for(var i = 0, len = listeners.change.length; i < len; i++) {
-      listeners.change[i](col);
+  function changed(skip) {
+    skip = isArray(skip)? skip: [];
+
+    var li = listeners.change;
+    var v;
+
+    for(var i = 0, len = li.length; i < len; i++) {
+      v = li[i];
+      if(skip.indexOf(v.name) == -1) v.fn(col);
     }
   }
 
@@ -147,10 +153,10 @@ function setup(o) {
 
   var ob = {
     e: e,
-    update: function() {
-      changed();
+    update: function(skip) {
+      changed(skip);
 
-      return ob;
+      return this;
     },
     get: function() {
       return col;
@@ -159,17 +165,17 @@ function setup(o) {
       var oldCol = this.get();
       col = cbs.init(getColor(c), xy, z);
 
-      if(oldCol.hex() != col.hex()) changed();
+      if(oldCol.hex() != col.hex()) this.update();
 
-      return ob;
+      return this;
     },
-    on: function(evt, cb) {
+    on: function(evt, cb, name) {
       if(evt == 'change' || evt == 'done') {
-        listeners[evt].push(cb);
+        listeners[evt].push({name: name, fn: cb});
       }
       else console.warn('Passed invalid evt name "' + evt + '" to colorjoe.on');
 
-      return ob;
+      return this;
     },
     removeAllListeners: function(evt) {
       if (evt) {
@@ -180,6 +186,8 @@ function setup(o) {
           delete listeners[key];
         }
       }
+
+      return this;
     }
   };
 
@@ -222,10 +230,31 @@ function setupExtras(p, joe, extras) {
     extra = name in picker._extras? picker._extras[name]: null;
 
     if(extra) {
-      cbs = extra(c, joe, params);
-      for(var k in cbs) joe.on(k, cbs[k]);
+      cbs = extra(c, extraProxy(joe, name), params);
+      for(var k in cbs) joe.on(k, cbs[k], name);
     }
   });
+}
+
+function extraProxy(joe, name) {
+  var ret = copy(joe);
+
+  ret.update = function() {
+    joe.update([name]);
+  };
+
+  return ret;
+}
+
+function copy(o) {
+  // returns a shallow copy
+  var ret = {};
+
+  for(var k in o) {
+    ret[k] = o[k];
+  }
+
+  return ret;
 }
 
 function all(cb, a) {return a.map(cb).filter(id).length == a.length;}

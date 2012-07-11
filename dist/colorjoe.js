@@ -1053,7 +1053,6 @@ function fields(p, joe, o) {
   };
   var inputLen = ('' + fac).length + fix;
   inputLen = fix? inputLen + 1: inputLen;
-  var chg = false; // XXX
 
   var initials = cs.split('').map(function(n) {return n.toUpperCase();});
 
@@ -1074,34 +1073,28 @@ function fields(p, joe, o) {
     elems.forEach(function(o) {col.push(o.e.input.value / fac);});
     col.push(1); // alpha
 
-    chg = true;
     joe.set(onecolor(col));
   }
 
   return {
     change: function(col) {
-      if(!chg)
-        elems.forEach(function(o) {
-          o.e.input.value = (col[methods[o.name]]() * fac).toFixed(fix);
-        });
-      chg = false;
+      elems.forEach(function(o) {
+        o.e.input.value = (col[methods[o.name]]() * fac).toFixed(fix);
+      });
     }
   };
 }
 
 function hex(p, joe) {
   var e = utils.labelInput('hex', '', p, 6);
-  var chg = false; // XXX
 
   e.input.onkeyup = function(elem) {
-    chg = true;
     joe.set('#' + pad(elem.target.value, 6, '0'));
   };
 
   return {
     change: function(col) {
-      if(!chg) e.input.value = col.hex().slice(1);
-      chg = false;
+      e.input.value = col.hex().slice(1);
     }
   };
 }
@@ -1253,9 +1246,15 @@ function setup(o) {
   var col = cbs.init(previous, xy, z);
   var listeners = {change: [], done: []};
 
-  function changed() {
-    for(var i = 0, len = listeners.change.length; i < len; i++) {
-      listeners.change[i](col);
+  function changed(skip) {
+    skip = isArray(skip)? skip: [];
+
+    var li = listeners.change;
+    var v;
+
+    for(var i = 0, len = li.length; i < len; i++) {
+      v = li[i];
+      if(skip.indexOf(v.name) == -1) v.fn(col);
     }
   }
 
@@ -1270,10 +1269,10 @@ function setup(o) {
 
   var ob = {
     e: e,
-    update: function() {
-      changed();
+    update: function(skip) {
+      changed(skip);
 
-      return ob;
+      return this;
     },
     get: function() {
       return col;
@@ -1282,17 +1281,17 @@ function setup(o) {
       var oldCol = this.get();
       col = cbs.init(getColor(c), xy, z);
 
-      if(oldCol.hex() != col.hex()) changed();
+      if(oldCol.hex() != col.hex()) this.update();
 
-      return ob;
+      return this;
     },
-    on: function(evt, cb) {
+    on: function(evt, cb, name) {
       if(evt == 'change' || evt == 'done') {
-        listeners[evt].push(cb);
+        listeners[evt].push({name: name, fn: cb});
       }
       else console.warn('Passed invalid evt name "' + evt + '" to colorjoe.on');
 
-      return ob;
+      return this;
     },
     removeAllListeners: function(evt) {
       if (evt) {
@@ -1303,6 +1302,8 @@ function setup(o) {
           delete listeners[key];
         }
       }
+
+      return this;
     }
   };
 
@@ -1345,10 +1346,31 @@ function setupExtras(p, joe, extras) {
     extra = name in picker._extras? picker._extras[name]: null;
 
     if(extra) {
-      cbs = extra(c, joe, params);
-      for(var k in cbs) joe.on(k, cbs[k]);
+      cbs = extra(c, extraProxy(joe, name), params);
+      for(var k in cbs) joe.on(k, cbs[k], name);
     }
   });
+}
+
+function extraProxy(joe, name) {
+  var ret = copy(joe);
+
+  ret.update = function() {
+    joe.update([name]);
+  };
+
+  return ret;
+}
+
+function copy(o) {
+  // returns a shallow copy
+  var ret = {};
+
+  for(var k in o) {
+    ret[k] = o[k];
+  }
+
+  return ret;
 }
 
 function all(cb, a) {return a.map(cb).filter(id).length == a.length;}

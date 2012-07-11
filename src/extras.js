@@ -32,7 +32,6 @@ function fields(p, joe, o) {
   };
   var inputLen = ('' + fac).length + fix;
   inputLen = fix? inputLen + 1: inputLen;
-  var chg = false; // XXX
 
   var initials = cs.split('').map(function(n) {return n.toUpperCase();});
 
@@ -53,34 +52,28 @@ function fields(p, joe, o) {
     elems.forEach(function(o) {col.push(o.e.input.value / fac);});
     col.push(1); // alpha
 
-    chg = true;
     joe.set(onecolor(col));
   }
 
   return {
     change: function(col) {
-      if(!chg)
-        elems.forEach(function(o) {
-          o.e.input.value = (col[methods[o.name]]() * fac).toFixed(fix);
-        });
-      chg = false;
+      elems.forEach(function(o) {
+        o.e.input.value = (col[methods[o.name]]() * fac).toFixed(fix);
+      });
     }
   };
 }
 
 function hex(p, joe) {
   var e = utils.labelInput('hex', '', p, 6);
-  var chg = false; // XXX
 
   e.input.onkeyup = function(elem) {
-    chg = true;
     joe.set('#' + pad(elem.target.value, 6, '0'));
   };
 
   return {
     change: function(col) {
-      if(!chg) e.input.value = col.hex().slice(1);
-      chg = false;
+      e.input.value = col.hex().slice(1);
     }
   };
 }
