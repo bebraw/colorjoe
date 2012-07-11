@@ -13,9 +13,10 @@ function currentColor(p) {
   };
 }
 
-function fields(cs, fac, fix) {
-  fac = fac || 255;
-  fix = fix >= 0? fix: 2;
+function fields(p, joe, o) {
+  var cs = o.space;
+  var fac = o.limit || 255;
+  var fix = o.fix >= 0? o.fix: 2;
   var methods = {
     R: 'red',
     G: 'green',
@@ -38,33 +39,31 @@ function fields(cs, fac, fix) {
   if(['RGB', 'HSL', 'HSV', 'CMYK'].indexOf(cs) < 0)
     return console.warn('Invalid field names', cs);
 
-  return function(p, joe) {
-    var c = utils.div('colorFields', p);
-    var elems = initials.map(function(n, i) {
-      var e = utils.labelInput('color ' + methods[n], n, c, inputLen);
-      e.input.onkeyup = update;
+  var c = utils.div('colorFields', p);
+  var elems = initials.map(function(n, i) {
+    var e = utils.labelInput('color ' + methods[n], n, c, inputLen);
+    e.input.onkeyup = update;
 
-      return {name: n, e: e};
-    });
+    return {name: n, e: e};
+  });
 
-    function update() {
-      var col = [cs];
+  function update() {
+    var col = [cs];
 
-      elems.forEach(function(o) {col.push(o.e.input.value / fac);});
+    elems.forEach(function(o) {col.push(o.e.input.value / fac);});
 
-      chg = true;
-      joe.set(onecolor(col));
+    chg = true;
+    joe.set(onecolor(col));
+  }
+
+  return {
+    change: function(col) {
+      if(!chg)
+        elems.forEach(function(o) {
+          o.e.input.value = (col[methods[o.name]]() * fac).toFixed(fix);
+        });
+      chg = false;
     }
-
-    return {
-      change: function(col) {
-        if(!chg)
-          elems.forEach(function(o) {
-            o.e.input.value = (col[methods[o.name]]() * fac).toFixed(fix);
-          });
-        chg = false;
-      }
-    };
   };
 }
 

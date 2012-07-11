@@ -1,8 +1,8 @@
-/*! colorjoe - v0.6.2 - 2012-07-11
+/*! colorjoe - v0.6.2-wip - 2012-07-11
 * http://bebraw.github.com/colorjoe/
 * Copyright (c) 2012 Juho Vepsäläinen; Licensed MIT */
 
-/*! drag.js - v0.3.7 - 2012-07-11
+/*! drag.js - v0.3.8 - 2012-07-11
 * http://bebraw.github.com/drag.js/
 * Copyright (c) 2012 Juho Vepsalainen; Licensed MIT */
 
@@ -223,7 +223,9 @@ function findPos(e) {
 // http://javascript.about.com/library/blmousepos.htm
 function cursorX(elem, evt) {
     if(isFixed(elem)) {
-        var bodyLeft = parseInt(document.defaultView.getComputedStyle(document.body, "").marginLeft, 10) - calc(elem, 'scrollLeft') + window.pageXOffset + elem.style.marginLeft;
+        var bodyLeft = parseInt(getStyle(document.body, 'marginLeft'), 10) -
+            calc(elem, 'scrollLeft') + window.pageXOffset +
+            elem.style.marginLeft;
 
         return evt.clientX - bodyLeft;
     }
@@ -233,7 +235,9 @@ function cursorX(elem, evt) {
 }
 function cursorY(elem, evt) {
     if(isFixed(elem)) {
-        var bodyTop = parseInt(document.defaultView.getComputedStyle(document.body, "").marginTop, 10) - calc(elem, 'scrollTop') + window.pageYOffset + elem.style.marginTop;
+        var bodyTop = parseInt(getStyle(document.body, 'marginTop'), 10) -
+            calc(elem, 'scrollTop') + window.pageYOffset +
+            elem.style.marginTop;
 
         return evt.clientY - bodyTop;
     }
@@ -262,6 +266,18 @@ function isFixed(element) {
         element = element.parentNode;
         if(element.nodeName == "HTML") return false;
         else return true;
+}
+
+// http://www.javascriptkit.com/dhtmltutors/dhtmlcascade4.shtml
+function getStyle(el, cssprop){
+    if (el.currentStyle) // IE
+        return el.currentStyle[cssprop];
+
+    if(document.defaultView && document.defaultView.getComputedStyle)
+        return document.defaultView.getComputedStyle(el, "")[cssprop];
+
+    //try and get inline style
+    return el.style[cssprop];
 }
 
 // Used style is to get around browsers' different methods of getting
@@ -1018,9 +1034,10 @@ function currentColor(p) {
   };
 }
 
-function fields(cs, fac, fix) {
-  fac = fac || 255;
-  fix = fix >= 0? fix: 2;
+function fields(p, joe, o) {
+  var cs = o.space;
+  var fac = o.limit || 255;
+  var fix = o.fix >= 0? o.fix: 2;
   var methods = {
     R: 'red',
     G: 'green',
@@ -1043,33 +1060,31 @@ function fields(cs, fac, fix) {
   if(['RGB', 'HSL', 'HSV', 'CMYK'].indexOf(cs) < 0)
     return console.warn('Invalid field names', cs);
 
-  return function(p, joe) {
-    var c = utils.div('colorFields', p);
-    var elems = initials.map(function(n, i) {
-      var e = utils.labelInput('color ' + methods[n], n, c, inputLen);
-      e.input.onkeyup = update;
+  var c = utils.div('colorFields', p);
+  var elems = initials.map(function(n, i) {
+    var e = utils.labelInput('color ' + methods[n], n, c, inputLen);
+    e.input.onkeyup = update;
 
-      return {name: n, e: e};
-    });
+    return {name: n, e: e};
+  });
 
-    function update() {
-      var col = [cs];
+  function update() {
+    var col = [cs];
 
-      elems.forEach(function(o) {col.push(o.e.input.value / fac);});
+    elems.forEach(function(o) {col.push(o.e.input.value / fac);});
 
-      chg = true;
-      joe.set(onecolor(col));
+    chg = true;
+    joe.set(onecolor(col));
+  }
+
+  return {
+    change: function(col) {
+      if(!chg)
+        elems.forEach(function(o) {
+          o.e.input.value = (col[methods[o.name]]() * fac).toFixed(fix);
+        });
+      chg = false;
     }
-
-    return {
-      change: function(col) {
-        if(!chg)
-          elems.forEach(function(o) {
-            o.e.input.value = (col[methods[o.name]]() * fac).toFixed(fix);
-          });
-        chg = false;
-      }
-    };
   };
 }
 
@@ -1172,11 +1187,24 @@ picker.hsl = picker({
   }
 });
 
-picker.extras = extras;
+picker._extras = {};
+
+picker.registerExtra = function(name, fn) {
+  if(name in picker._extras)
+    console.warn('Extra "' + name + '"has been registered already!');
+
+  picker._extras[name] = fn;
+};
+
+for(var k in extras) {
+  picker.registerExtra(k, extras[k]);
+}
 
 return picker;
 
-function RGB_BG(e, h) {utils.BG(e, new onecolor.HSV(h, 1, 1).cssa());}
+function RGB_BG(e, h) {
+  utils.BG(e, new onecolor.HSV(h, 1, 1).cssa());
+}
 
 function setup(o) {
   if(!o.e) return console.warn('colorjoe: missing element');
@@ -1298,16 +1326,32 @@ function setupExtras(p, joe, extras) {
 
   var c = utils.div('extras', p);
   var cbs;
+  var name;
+  var params;
 
   extras.forEach(function(e) {
-    cbs = e(c, joe);
+    if(isArray(e)) {
+      name = e[0];
+      extra = name in picker._extras? picker._extras[name]: null;
+      params = e.length > 1? e[1]: {};
+    }
+    else {
+      extra = e in picker._extras? picker._extras[e]: null;
+      params = {};
+    }
 
-    for(var k in cbs) joe.on(k, cbs[k]);
+    if(extra) {
+      cbs = extra(c, joe, params);
+      for(var k in cbs) joe.on(k, cbs[k]);
+    }
   });
 }
 
 function all(cb, a) {return a.map(cb).filter(id).length == a.length;}
 
+function isArray(o) {
+    return Object.prototype.toString.call(o) === "[object Array]";
+}
 function isString(o) {return typeof(o) === 'string';}
 function isDefined(input) {return typeof input !== "undefined";}
 function isFunction(input) {return typeof input === "function";}

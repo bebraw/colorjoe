@@ -63,18 +63,43 @@ provides a few extras. The following example shows how to use them:
 
 ```javascript
 var joe = colorjoe.hsl('hslPicker', 'red', [
-    colorjoe.extras.currentColor,
-    colorjoe.extras.fields('HSL', 255, 0),
-    colorjoe.extras.hex
+    'currentColor',
+    ['fields', {space: 'HSL', limit: 255, fix: 0},
+    'hex'
 ]);
 ```
 
 The code above would generate a HSL picker that shows in addition the currently
 selected color, HSL input fields and a hex field.
 
-`fields` extra is a factory that accepts name of a color space (RGB, HSL, HSV
-or CMYK). In addition it takes maximum value (defaults to 255) and a fix value
+As you can see `fields` has been defined using an array. This array contains
+the name of the extra and then parameters passed to inside an object. In this
+case the extra accepts name of a color space (RGB, HSL, HSV or CMYK). In
+addition it takes a limit value (defaults to 255) and a fix value
 (defaults to 2). fix represents the amount of numbers shown after decimal.
+
+### Implementing Custom Extras
+
+It is possible to implement your custom extras without having to hack the core
+code. This can be done as follows:
+
+```javascript
+colorjoe.registerExtra('text', function(p, joe, o) {
+    // attach new elements to p element here (as children that is)
+    // o is optional and will contain any parameters you might have
+    // passed to the extra using the array syntax
+
+    // optional return. these are triggered by colorjoe
+    // use this way instead of joe.on
+    return {
+        change: function(col) {},
+        done: function(col) {}
+    };
+})
+```
+
+Now you can simply pass your `text` extra amongst the others and it will just
+work.
 
 ## Contributors
 

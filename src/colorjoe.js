@@ -65,11 +65,24 @@ picker.hsl = picker({
   }
 });
 
-picker.extras = extras;
+picker._extras = {};
+
+picker.registerExtra = function(name, fn) {
+  if(name in picker._extras)
+    console.warn('Extra "' + name + '"has been registered already!');
+
+  picker._extras[name] = fn;
+};
+
+for(var k in extras) {
+  picker.registerExtra(k, extras[k]);
+}
 
 return picker;
 
-function RGB_BG(e, h) {utils.BG(e, new onecolor.HSV(h, 1, 1).cssa());}
+function RGB_BG(e, h) {
+  utils.BG(e, new onecolor.HSV(h, 1, 1).cssa());
+}
 
 function setup(o) {
   if(!o.e) return console.warn('colorjoe: missing element');
@@ -191,16 +204,32 @@ function setupExtras(p, joe, extras) {
 
   var c = utils.div('extras', p);
   var cbs;
+  var name;
+  var params;
 
   extras.forEach(function(e) {
-    cbs = e(c, joe);
+    if(isArray(e)) {
+      name = e[0];
+      extra = name in picker._extras? picker._extras[name]: null;
+      params = e.length > 1? e[1]: {};
+    }
+    else {
+      extra = e in picker._extras? picker._extras[e]: null;
+      params = {};
+    }
 
-    for(var k in cbs) joe.on(k, cbs[k]);
+    if(extra) {
+      cbs = extra(c, joe, params);
+      for(var k in cbs) joe.on(k, cbs[k]);
+    }
   });
 }
 
 function all(cb, a) {return a.map(cb).filter(id).length == a.length;}
 
+function isArray(o) {
+    return Object.prototype.toString.call(o) === "[object Array]";
+}
 function isString(o) {return typeof(o) === 'string';}
 function isDefined(input) {return typeof input !== "undefined";}
 function isFunction(input) {return typeof input === "function";}

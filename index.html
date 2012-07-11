@@ -108,20 +108,32 @@
           });
           defer('dist/colorjoe.js', function () {
               var val = document.getElementById('rgbValue');
+
+              colorjoe.registerExtra('text', function(p, joe, o) {
+                  e(p, o.text? o.text: 'text')
+              });
+
+              function e(parent, text) {
+                  var elem = document.createElement('div');
+                  elem.innerHTML = text;
+                  parent.appendChild(elem);
+              }
+
               colorjoe.rgb('rgbPicker').on('change', function(c) {
                   val.innerHTML = c.css();
               }).update();
               colorjoe.rgb('extraPicker', '#113c38', [
-                  colorjoe.extras.currentColor,
-                  colorjoe.extras.fields('RGB', 255, 0),
-                  colorjoe.extras.fields('HSL', 100),
-                  colorjoe.extras.hex
+                  'currentColor',
+                  ['fields', {space: 'RGB', limit: 255, fix: 0}],
+                  'hex',
+                  'text',
+                  ['text', {text: 'param demo'}]
               ]);
               colorjoe.hsl('hslPicker', '#113c38', [
-                  colorjoe.extras.currentColor,
-                  colorjoe.extras.fields('HSL', 100),
-                  colorjoe.extras.fields('CMYK', 100),
-                  colorjoe.extras.hex
+                  'currentColor',
+                  ['fields', {space: 'HSL', limit: 100}],
+                  ['fields', {space: 'CMYK', limit: 100}],
+                  'hex'
               ]);
           });
       }());
