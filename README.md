@@ -12,7 +12,7 @@ whatnot) thanks to the simple API it provides.
 
 ## Installation
 
-Add prepackaged `dist/colorjoe.js` and `css/colorjoe.css` to you page or use AMD to load
+Add prepackaged `dist/colorjoe.js` and `css/colorjoe.css` to your page or use AMD to load
 the dependencies from `src/`.
 
 ## Usage
