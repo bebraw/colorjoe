@@ -1,4 +1,4 @@
-/*! colorjoe - v0.7.0 - 2012-07-11
+/*! colorjoe - v0.7.0 - 2012-11-07
 * http://bebraw.github.com/colorjoe/
 * Copyright (c) 2012 Juho Vepsalainen; Licensed MIT */
 
@@ -295,6 +295,7 @@ function usedStyle(element, property) {
 }
 }));
 
+/*jshint evil:true, onevar:false*/
 /*global define*/
 var installedColorSpaces = [],
     namedColors = {},
@@ -312,7 +313,7 @@ var installedColorSpaces = [],
                              "(?:," + alphaChannelRegExp.source + ")?" +
                          "\\)$", "i");
 
-function ONECOLOR (obj) {
+function ONECOLOR(obj) {
     if (Object.prototype.toString.apply(obj) === '[object Array]') {
         if (obj.length === 4) {
             // Assumed 4 element int RGB array from canvas with all channels [0;255]
@@ -366,9 +367,8 @@ function ONECOLOR (obj) {
         return new ONECOLOR.RGB((obj & 0xFF) / 255, ((obj & 0xFF00) >> 8) / 255, ((obj & 0xFF0000) >> 16) / 255);
     }
     return false;
-};
+}
 
-/*jslint evil:true*/
 function installColorSpace(colorSpaceName, propertyNames, config) {
     ONECOLOR[colorSpaceName] = new Function(propertyNames.join(","),
         // Allow passing an array to the constructor:
@@ -447,7 +447,7 @@ function installColorSpace(colorSpaceName, propertyNames, config) {
 
     // Generate getters and setters
     propertyNames.forEach(function (propertyName, i) {
-        prototype[propertyName] = new Function("value", "isDelta",
+        prototype[propertyName] = prototype[propertyName === 'black' ? 'k' : propertyName[0]] = new Function("value", "isDelta",
             // Simple getter mode: color.red()
             "if (typeof value === 'undefined') {" +
                 "return this._" + propertyName + ";" +
@@ -468,7 +468,7 @@ function installColorSpace(colorSpaceName, propertyNames, config) {
         var obj = {};
         obj[sourceColorSpaceName.toLowerCase()] = new Function("return this.rgb()." + sourceColorSpaceName.toLowerCase() + "();"); // Fallback
         ONECOLOR[sourceColorSpaceName].propertyNames.forEach(function (propertyName, i) {
-            obj[propertyName] = new Function("value", "isDelta", "return this." + sourceColorSpaceName.toLowerCase() + "()." + propertyName + "(value, isDelta);");
+            obj[propertyName] = obj[propertyName === 'black' ? 'k' : propertyName[0]] = new Function("value", "isDelta", "return this." + sourceColorSpaceName.toLowerCase() + "()." + propertyName + "(value, isDelta);");
         });
         for (var prop in obj) {
             if (obj.hasOwnProperty(prop) && ONECOLOR[targetColorSpaceName].prototype[prop] === undefined) {
@@ -483,7 +483,7 @@ function installColorSpace(colorSpaceName, propertyNames, config) {
     });
 
     installedColorSpaces.push(colorSpaceName);
-};
+}
 
 ONECOLOR.installMethod = function (name, fn) {
     installedColorSpaces.forEach(function (colorSpace) {
@@ -509,16 +509,15 @@ installColorSpace('RGB', ['red', 'green', 'blue', 'alpha'], {
 if (typeof module !== 'undefined') {
     // Node module export
     module.exports = ONECOLOR;
+} else if (typeof define === 'function' && !undef(define.amd)) {
+    define([], function () {
+        return ONECOLOR;
+    });
+} else if (typeof jQuery !== 'undefined' && undef(jQuery.color)) {
+    jQuery.color = ONECOLOR;
 } else {
-    // Browser
-    if (typeof define === 'function' && !undef(define.amd)) {
-        define([], function () {
-            return ONECOLOR;
-        });
-    } else {
-        one = window.one || {};
-        one.color = ONECOLOR;
-    }
+    one = window.one || {};
+    one.color = ONECOLOR;
 }
 
 /*global namedColors*/
@@ -836,7 +835,7 @@ ONECOLOR.installMethod('darken', function (amount) {
 });
 
 
-ONECOLOR.installMethod('saturate', function (amount) {
+ONECOLOR.installMethod('desaturate', function (amount) {
     return this.saturation(isNaN(amount) ? -0.1 : -amount, true);
 });
 
@@ -857,7 +856,7 @@ ONECOLOR.installMethod('lighten', function (amount) {
 
 ONECOLOR.installMethod('mix', function (otherColor, weight) {
     otherColor = ONECOLOR(otherColor).rgb();
-    weight = 1 - (weight || 0.5);
+    weight = 1 - (isNaN(weight) ? 0.5 : weight);
 
     var w = weight * 2 - 1,
         a = this._alpha - otherColor._alpha,
@@ -866,10 +865,10 @@ ONECOLOR.installMethod('mix', function (otherColor, weight) {
         rgb = this.rgb();
 
     return new ONECOLOR.RGB(
-        this._red * weight1 + otherColor._red * weight2,
-        this._green * weight1 + otherColor._green * weight2,
-        this._blue * weight1 + otherColor._blue * weight2,
-        this._alpha * weight + otherColor._alpha * (1 - weight)
+        rgb._red * weight1 + otherColor._red * weight2,
+        rgb._green * weight1 + otherColor._green * weight2,
+        rgb._blue * weight1 + otherColor._blue * weight2,
+        rgb._alpha * weight + otherColor._alpha * (1 - weight)
     );
 });
 
@@ -1039,24 +1038,10 @@ function fields(p, joe, o) {
   var cs = o.space;
   var fac = o.limit || 255;
   var fix = o.fix >= 0? o.fix: 0;
-  var methods = {
-    R: 'red',
-    G: 'green',
-    B: 'blue',
-    H: 'hue',
-    S: 'saturation',
-    V: 'value',
-    L: 'lightness',
-    C: 'cyan',
-    M: 'magenta',
-    Y: 'yellow',
-    K: 'black',
-    A: 'alpha'
-  };
   var inputLen = ('' + fac).length + fix;
   inputLen = fix? inputLen + 1: inputLen;
 
-  var initials = cs.split('').map(function(n) {return n.toUpperCase();});
+  var initials = cs.split('');
   var useAlpha = cs[cs.length - 1] == 'A';
   cs = useAlpha? cs.slice(0, -1): cs;
 
@@ -1065,7 +1050,9 @@ function fields(p, joe, o) {
 
   var c = utils.div('colorFields', p);
   var elems = initials.map(function(n, i) {
-    var e = utils.labelInput('color ' + methods[n], n, c, inputLen);
+    n = n.toLowerCase();
+
+    var e = utils.labelInput('color ' + n, n, c, inputLen);
     e.input.onkeyup = update;
 
     return {name: n, e: e};
@@ -1084,7 +1071,7 @@ function fields(p, joe, o) {
   return {
     change: function(col) {
       elems.forEach(function(o) {
-        o.e.input.value = (col[methods[o.name]]() * fac).toFixed(fix);
+        o.e.input.value = (col[o.name]() * fac).toFixed(fix);
       });
     }
   };

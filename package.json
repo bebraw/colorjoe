@@ -6,7 +6,7 @@
 
     "dependencies": {
         "drag.js": "== 0.3.8",
-        "onecolor": "== 2.2.6"
+        "onecolor": "== 2.3.0"
     },
 
     "repository": {
