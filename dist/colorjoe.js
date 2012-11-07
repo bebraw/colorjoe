@@ -1121,6 +1121,18 @@ function hex(p, joe, o) {
   };
 }
 
+function close(p, joe, o) {
+  var elem = utils.e('a', o['class'] || 'close', p);
+  elem.href = '#';
+  elem.innerHTML = o.label || 'Close';
+
+  elem.onclick = function(e) {
+    e.preventDefault();
+
+    joe.hide();
+  };
+}
+
 function pad(a, n, c) {
   var ret = a;
 
@@ -1133,7 +1145,8 @@ return {
   currentColor: currentColor,
   fields: fields,
   hex: hex,
-  alpha: alpha
+  alpha: alpha,
+  close: close
 };
 }));
 
@@ -1294,6 +1307,16 @@ function setup(o) {
     e: e,
     update: function(skip) {
       changed(skip);
+
+      return this;
+    },
+    hide: function() {
+      e.style.display = 'none';
+
+      return this;
+    },
+    show: function() {
+      e.style.display = '';
 
       return this;
     },

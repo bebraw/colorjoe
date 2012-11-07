@@ -158,6 +158,16 @@ function setup(o) {
 
       return this;
     },
+    hide: function() {
+      e.style.display = 'none';
+
+      return this;
+    },
+    show: function() {
+      e.style.display = '';
+
+      return this;
+    },
     get: function() {
       return col;
     },

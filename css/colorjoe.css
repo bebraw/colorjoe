@@ -2,6 +2,14 @@
     float: right;
 }
 
+.container {
+    overflow: auto;
+}
+
+#showPicker {
+    float: left;
+}
+
 .colorPicker {
     background: #E8E6E0;
     border: 1px solid #BBB;

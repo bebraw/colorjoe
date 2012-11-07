@@ -59,6 +59,13 @@
 
         <div id="hslPicker"></div>
 
+        <h2>Closeable Picker</h2>
+
+        <div class="container">
+            <a href="#" id="showPicker">Show</a>
+            <div id="closeablePicker"></div>
+        </div>
+
       </section>
     </div>
     <footer>
@@ -126,6 +133,7 @@
                   val.innerHTML = c.css();
               }).update();
               colorjoe.rgb('extraPicker', '#113c38', [
+                  'close',
                   'currentColor',
                   ['fields', {space: 'RGB', limit: 255, fix: 2}],
                   'hex',
@@ -141,6 +149,15 @@
               ]).on('change', function(c) {
                   hVal.innerHTML = 'Alpha: ' + c.alpha().toFixed(2);
               }).update();
+              var cj = colorjoe.rgb('closeablePicker', 'red', [
+                  'close',
+                  'currentColor'
+              ]);
+              document.getElementById('showPicker').onclick = function(e) {
+                  e.preventDefault();
+
+                  cj.show();
+              };
           });
       }());
     </script>
