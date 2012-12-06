@@ -1,4 +1,4 @@
-/*! colorjoe - v0.7.1 - 2012-11-07
+/*! colorjoe - v0.7.1 - 2012-12-06
 * http://bebraw.github.com/colorjoe/
 * Copyright (c) 2012 Juho Vepsalainen; Licensed MIT */
 
@@ -1106,11 +1106,16 @@ function hex(p, joe, o) {
   e.input.value = '#';
 
   e.input.onkeyup = function(elem) {
+    var key = elem.keyCode || elem.which;
     var val = elem.target.value;
     val = val[0] == '#'? val: '#' + val;
     val = pad(val, 7, '0');
 
-    joe.set(val);
+    if(key == 13) joe.set(val);
+  };
+
+  e.input.onblur = function(elem) {
+    joe.set(elem.target.value);
   };
 
   return {
