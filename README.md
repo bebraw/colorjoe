@@ -113,6 +113,7 @@ work.
   [Grunt](https://github.com/cowboy/grunt) support + removeAllListeners
 * [Peter Müller](https://github.com/Munter) -
   [one.color](https://github.com/One-com/one-color) + HTML tweaks
+* [Edmundas Kondrašovas](https://github.com/edmundask) - Callback `done` fix
 
 ## Hacking
 
