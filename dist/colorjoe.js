@@ -1,4 +1,4 @@
-/*! colorjoe - v0.8.0 - Juho Vepsalainen <bebraw@gmail.com> - MIT
+/*! colorjoe - v0.8.1 - Juho Vepsalainen <bebraw@gmail.com> - MIT
 https://bebraw.github.com/colorjoe - 2013-06-25 */
 /*! drag.js - v0.3.8 - 2012-07-11
 * http://bebraw.github.com/drag.js/
