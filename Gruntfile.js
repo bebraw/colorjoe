@@ -39,7 +39,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('refresh', ['concat:basic', 'uglify']);
-    grunt.registerTask('default', ['concat:basic', 'uglify', 'watch']);
+    grunt.registerTask('default', ['refresh', 'watch']);
 
     ['grunt-contrib-concat',
      'grunt-contrib-uglify',
