@@ -146,7 +146,7 @@ function setup(o) {
     // Do not call done callback if the color did not change
     if (previous.equals(col)) return;
     for(var i = 0, len = listeners.done.length; i < len; i++) {
-      listeners.done[i](col);
+      listeners.done[i].fn(col);
     }
     previous = col;
   }
