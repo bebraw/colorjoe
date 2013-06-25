@@ -1,31 +1,36 @@
 {
-    "name": "colorjoe",
-    "description": "Scaleable color picker",
-    "author": "Juho Vepsalainen <bebraw@gmail.com>",
-    "version": "0.7.2",
-
-    "dependencies": {
-        "drag.js": "== 0.3.8",
-        "onecolor": "== 2.3.0"
-    },
-
-    "repository": {
-        "type": "git",
-        "url": "https://bebraw@github.com/bebraw/colorjoe.git"
-    },
-
-    "homepage": "https://bebraw.github.com/colorjoe",
-
-    "bugs": {
-        "url": "https://github.com/bebraw/colorjoe/issues"
-    },
-
-    "keywords": ["color", "colour", "requirejs", "amd"],
-
-    "main": "dist/colorjoe.js",
-
-    "licenses": [{
-        "type": "MIT",
-        "url": "https://github.com/bebraw/colorjoe/blob/master/LICENSE"
-    }]
+  "name": "colorjoe",
+  "description": "Scaleable color picker",
+  "author": "Juho Vepsalainen <bebraw@gmail.com>",
+  "version": "0.7.2",
+  "dependencies": {
+    "drag.js": "0.3.8",
+    "onecolor": "2.3.4",
+    "grunt": "0.4.1",
+    "grunt-contrib-watch": "0.4.4",
+    "grunt-contrib-uglify": "0.2.2",
+    "grunt-contrib-concat": "0.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://bebraw@github.com/bebraw/colorjoe.git"
+  },
+  "homepage": "https://bebraw.github.com/colorjoe",
+  "bugs": {
+    "url": "https://github.com/bebraw/colorjoe/issues"
+  },
+  "keywords": [
+    "color",
+    "colour",
+    "requirejs",
+    "amd"
+  ],
+  "main": "dist/colorjoe.js",
+  "license": "MIT",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/bebraw/colorjoe/blob/master/LICENSE"
+    }
+  ]
 }
