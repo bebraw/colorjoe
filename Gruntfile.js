@@ -12,15 +12,21 @@ module.exports = function(grunt) {
                     '<%= pkg.homepage %> - ' +
                     '<%= grunt.template.today("yyyy-mm-dd") %> */\n'
             },
-            basic: {
+            'default': {
                 src: [
-                    'node_modules/drag.js/dist/drag.js',
+                    'node_modules/dragjs/dist/dragjs.js',
                     'node_modules/onecolor/one-color-all-debug.js',
-                    'src/elemutils.js',
+                    'src/utils.js',
                     'src/extras.js',
                     'src/<%= pkg.name %>.js'
                 ],
                 dest: '<%= dirs.dest %>.js'
+            }
+        },
+        umd: {
+            'default': {
+                src: '<%= dirs.dest %>.js',
+                objectToExport: 'colorjoe'
             }
         },
         uglify: {
@@ -33,16 +39,17 @@ module.exports = function(grunt) {
         watch: {
             scripts: {
                 files: 'src/**/*.js',
-                tasks: ['concat:basic', 'uglify']
+                tasks: ['refresh']
             }
         }
     });
 
-    grunt.registerTask('refresh', ['concat:basic', 'uglify']);
+    grunt.registerTask('refresh', ['concat', 'umd', 'uglify']);
     grunt.registerTask('default', ['refresh', 'watch']);
 
     ['grunt-contrib-concat',
      'grunt-contrib-uglify',
-     'grunt-contrib-watch'
+     'grunt-contrib-watch',
+     'grunt-umd'
     ].forEach(grunt.loadNpmTasks);
 };

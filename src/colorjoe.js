@@ -1,10 +1,4 @@
-(function(root, factory) {
-  if(typeof define === 'function' && define.amd)
-    define(['./onecolor', './drag', './elemutils', './extras'], factory);
-  else root.colorjoe = factory(root.ONECOLOR, root.drag, root.elemutils,
-    root.colorjoeextras);
-}(this, function(onecolor, drag, utils, extras) {
-var picker = function(cbs) {
+var colorjoe = function(cbs) {
   if(!all(isFunction, [cbs.init, cbs.xy, cbs.z]))
     return console.warn('colorjoe: missing cb');
 
@@ -18,8 +12,10 @@ var picker = function(cbs) {
   };
 };
 
+var onecolor = ONECOLOR;
+
 /* pickers */
-picker.rgb = picker({
+colorjoe.rgb = colorjoe({
   init: function(col, xy, z) {
     var ret = onecolor(col).hsl();
 
@@ -42,7 +38,7 @@ picker.rgb = picker({
   }
 });
 
-picker.hsl = picker({
+colorjoe.hsl = colorjoe({
   init: function(col, xy, z) {
     var ret = onecolor(col).hsl();
 
@@ -65,20 +61,18 @@ picker.hsl = picker({
   }
 });
 
-picker._extras = {};
+colorjoe._extras = {};
 
-picker.registerExtra = function(name, fn) {
-  if(name in picker._extras)
+colorjoe.registerExtra = function(name, fn) {
+  if(name in colorjoe._extras)
     console.warn('Extra "' + name + '"has been registered already!');
 
-  picker._extras[name] = fn;
+  colorjoe._extras[name] = fn;
 };
 
 for(var k in extras) {
-  picker.registerExtra(k, extras[k]);
+  colorjoe.registerExtra(k, extras[k]);
 }
-
-return picker;
 
 function RGB_BG(e, h) {
   utils.BG(e, new onecolor.HSV(h, 1, 1).cssa());
@@ -247,7 +241,7 @@ function setupExtras(p, joe, extras) {
       name = e;
       params = {};
     }
-    extra = name in picker._extras? picker._extras[name]: null;
+    extra = name in colorjoe._extras? colorjoe._extras[name]: null;
 
     if(extra) {
       cbs = extra(c, extraProxy(joe, name + i), params);
@@ -286,4 +280,3 @@ function isString(o) {return typeof(o) === 'string';}
 function isDefined(input) {return typeof input !== "undefined";}
 function isFunction(input) {return typeof input === "function";}
 function id(a) {return a;}
-}));

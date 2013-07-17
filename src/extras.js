@@ -1,8 +1,3 @@
-(function(root, factory) {
-  if(typeof define === 'function' && define.amd)
-    define(['./elemutils', './drag'], factory);
-  else root.colorjoeextras = factory(root.elemutils, root.drag);
-}(this, function(utils, drag) {
 function currentColor(p) {
   var e1 = utils.div('currentColorContainer', p);
   var e = utils.div('currentColor', e1);
@@ -126,11 +121,10 @@ function pad(a, n, c) {
   return ret;
 }
 
-return {
+var extras = {
   currentColor: currentColor,
   fields: fields,
   hex: hex,
   alpha: alpha,
   close: close
 };
-}));

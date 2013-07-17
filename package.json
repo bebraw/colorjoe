@@ -4,12 +4,13 @@
   "author": "Juho Vepsalainen <bebraw@gmail.com>",
   "version": "0.8.1",
   "dependencies": {
-    "drag.js": "0.3.8",
+    "dragjs": "0.4.1",
     "onecolor": "2.3.4",
     "grunt": "0.4.1",
     "grunt-contrib-watch": "0.4.4",
     "grunt-contrib-uglify": "0.2.2",
-    "grunt-contrib-concat": "0.3.0"
+    "grunt-contrib-concat": "0.3.0",
+    "grunt-umd": "1.0.0"
   },
   "repository": {
     "type": "git",
