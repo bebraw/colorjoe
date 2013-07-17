@@ -2,7 +2,7 @@
   "name": "colorjoe",
   "description": "Scaleable color picker",
   "author": "Juho Vepsalainen <bebraw@gmail.com>",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "dependencies": {
     "dragjs": "0.4.1",
     "onecolor": "2.3.4",
