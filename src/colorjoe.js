@@ -12,8 +12,6 @@ var colorjoe = function(cbs) {
   };
 };
 
-var onecolor = ONECOLOR;
-
 /* pickers */
 colorjoe.rgb = colorjoe({
   init: function(col, xy, z) {

@@ -15,7 +15,6 @@ module.exports = function(grunt) {
             'default': {
                 src: [
                     'node_modules/dragjs/dist/dragjs.js',
-                    'node_modules/onecolor/one-color-all-debug.js',
                     'src/utils.js',
                     'src/extras.js',
                     'src/<%= pkg.name %>.js'
@@ -26,7 +25,12 @@ module.exports = function(grunt) {
         umd: {
             'default': {
                 src: '<%= dirs.dest %>.js',
-                objectToExport: 'colorjoe'
+                objectToExport: 'colorjoe',
+                globalAlias: 'colorjoe',
+                deps: {
+                    'default': ['onecolor'],
+                    global: ['one.color']
+                }
             }
         },
         uglify: {

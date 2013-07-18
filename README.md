@@ -15,6 +15,8 @@ whatnot) thanks to the simple API it provides.
 Add prepackaged `dist/colorjoe.js` and `css/colorjoe.css` to your page or use AMD to load
 the dependencies from `src/`.
 
+Note that you need to load [one.color](https://github.com/One-com/one-color) before using `colorjoe`. In case you are using RequireJS, shim it at your configuration so that it is bound to `onecolor`.
+
 ## Usage
 
 ```javascript

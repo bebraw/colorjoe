@@ -9,10 +9,10 @@
 
     <title>colorjoe by bebraw</title>
 
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/pygment_trac.css">
-    <link rel="stylesheet" href="css/iehacks.css">
-    <link rel="stylesheet" href="css/colorjoe.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/pygment_trac.css">
+    <link rel="stylesheet" href="../css/iehacks.css">
+    <link rel="stylesheet" href="../css/colorjoe.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
   </head>
@@ -30,18 +30,9 @@
       </header>
       <section>
 
-        <p>Unlike many other colorpickers out there, colorjoe is truly scaleable.
-        It is based on CSS and does not depend on external images. As a result,
-        you can tweak its size to fit your purposes. Supports touch and AMD
-        module definition as well.</p>
+        <p>This example demonstrates how to set up Colorjoe with RequireJS.</p>
 
-        <p>Study the source of this page to get started. You might also check out
-        the <a href="https://github.com/bebraw/colorjoe/blob/master/README.md">README</a>
-        for some additional details and API documentation.
-        </p>
-
-        <a href="/rjsdemo">RequireJS demo</a>
-
+        <a href="../">Back to index</a>
       </section>
       <section>
 
@@ -50,23 +41,6 @@
         <div id="rgbValue"></div>
 
         <div id="rgbPicker"></div>
-
-        <h2>RGB Picker with Extras</h2>
-
-        <div id="extraPicker"></div>
-
-        <h2>HSL Picker with Extras</h2>
-
-        <div id="hslaValue"></div>
-
-        <div id="hslPicker"></div>
-
-        <h2>Closeable Picker</h2>
-
-        <div class="container">
-            <a href="#" id="showPicker">Show</a>
-            <div id="closeablePicker"></div>
-        </div>
 
       </section>
     </div>
@@ -78,9 +52,6 @@
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <script src='js/scale.fix.js'></script>
-    <script src='js/onecolor.js'></script>
-    <script src='dist/colorjoe.js'></script>
-    <script src='js/demo.js'></script>
+    <script data-main="main" src="require.js"></script>
   </body>
 </html>
