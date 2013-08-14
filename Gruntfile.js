@@ -25,8 +25,8 @@ module.exports = function(grunt) {
         umd: {
             'default': {
                 src: '<%= dirs.dest %>.js',
-                objectToExport: 'colorjoe',
-                globalAlias: 'colorjoe',
+                objectToExport: '<%= pkg.name %>',
+                globalAlias: '<%= pkg.name %>',
                 deps: {
                     'default': ['onecolor'],
                     global: ['one.color']
