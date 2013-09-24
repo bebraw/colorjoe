@@ -9,8 +9,8 @@
         root.colorjoe = factory(root.one.color);
     }
 }(this, function(onecolor) {
-/*! colorjoe - v0.9.1 - Juho Vepsalainen <bebraw@gmail.com> - MIT
-https://bebraw.github.com/colorjoe - 2013-07-18 */
+/*! colorjoe - v0.9.2 - Juho Vepsalainen <bebraw@gmail.com> - MIT
+https://bebraw.github.com/colorjoe - 2013-09-24 */
 /*! dragjs - v0.4.0 - Juho Vepsalainen <bebraw@gmail.com> - MIT
 https://bebraw.github.com/dragjs - 2013-07-17 */
 var drag = (function() {
@@ -696,7 +696,7 @@ function setup(o) {
 }
 
 function getColor(c) {
-  if(!isDefined(c)) return onecolor('black');
+  if(!isDefined(c)) return onecolor('#000');
   if(c.isColor) return c;
 
   var ret = onecolor(c);
@@ -705,7 +705,7 @@ function getColor(c) {
 
   if(isDefined(c)) console.warn('Passed invalid color to colorjoe, using black instead');
 
-  return onecolor('black');
+  return onecolor('#000');
 }
 
 function setupExtras(p, joe, extras) {
