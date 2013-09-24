@@ -116,6 +116,7 @@ work.
 * [Peter Müller](https://github.com/Munter) -
   [one.color](https://github.com/One-com/one-color) + HTML tweaks
 * [Edmundas Kondrašovas](https://github.com/edmundask) - Callback `done` fix
+* [Fabio Caseri](https://github.com/fabiocaseri) - Use hex code instead of `black`
 
 ## Hacking
 
