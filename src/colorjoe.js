@@ -15,7 +15,7 @@ var colorjoe = function(cbs) {
 /* pickers */
 colorjoe.rgb = colorjoe({
   init: function(col, xy, z) {
-    var ret = onecolor(col).hsl();
+    var ret = onecolor(col).hsv();
 
     this.xy(ret, {x: ret.saturation(), y: 1 - ret.value()}, xy, z);
     this.z(ret, ret.hue(), xy, z);
