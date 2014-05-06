@@ -9,8 +9,8 @@
         root.colorjoe = factory(root.one.color);
     }
 }(this, function(onecolor) {
-/*! colorjoe - v0.9.2 - Juho Vepsalainen <bebraw@gmail.com> - MIT
-https://bebraw.github.com/colorjoe - 2013-09-24 */
+/*! colorjoe - v0.9.3 - Juho Vepsalainen <bebraw@gmail.com> - MIT
+https://bebraw.github.com/colorjoe - 2014-05-06 */
 /*! dragjs - v0.4.0 - Juho Vepsalainen <bebraw@gmail.com> - MIT
 https://bebraw.github.com/dragjs - 2013-07-17 */
 var drag = (function() {
@@ -501,7 +501,7 @@ var colorjoe = function(cbs) {
 /* pickers */
 colorjoe.rgb = colorjoe({
   init: function(col, xy, z) {
-    var ret = onecolor(col).hsl();
+    var ret = onecolor(col).hsv();
 
     this.xy(ret, {x: ret.saturation(), y: 1 - ret.value()}, xy, z);
     this.z(ret, ret.hue(), xy, z);
