@@ -117,6 +117,7 @@ work.
   [one.color](https://github.com/One-com/one-color) + HTML tweaks
 * [Edmundas Kondrašovas](https://github.com/edmundask) - Callback `done` fix
 * [Fabio Caseri](https://github.com/fabiocaseri) - Use hex code instead of `black`
+* [Artem Zakharchenko](https://github.com/blackrabbit99) - Fix issue with initial color when it was set black on RGB (#20).
 
 ## Hacking
 
