@@ -384,6 +384,7 @@ function fields(p, joe, o) {
 
     var e = utils.labelInput('color ' + n, n, c, inputLen);
     e.input.onblur = done;
+    e.input.onkeydown = validate;
     e.input.onkeyup = update;
 
     return {name: n, e: e};
@@ -391,6 +392,12 @@ function fields(p, joe, o) {
 
   function done() {
     joe.done();
+  }
+
+  function validate(e) {
+    if (!(e.ctrlKey || e.altKey) && /^[a-zA-Z]$/.test(e.key)) {
+      e.preventDefault();
+    }
   }
 
   function update() {
