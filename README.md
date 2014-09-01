@@ -118,7 +118,7 @@ work.
 * [Edmundas Kondrašovas](https://github.com/edmundask) - Callback `done` fix
 * [Fabio Caseri](https://github.com/fabiocaseri) - Use hex code instead of `black`
 * [Artem Zakharchenko](https://github.com/blackrabbit99) - Fix issue with initial color when it was set black on RGB (#20).
-* [Tyler Waters](https://github.com/tswaters) - Improve CSS to work with IE better. Ensure `done` callback is fired for extras.
+* [Tyler Waters](https://github.com/tswaters) - Improve CSS to work with IE better. Ensure `done` callback is fired for extras. Add validation to extra fields to avoid exceptions from one-color.
 
 ## Hacking
 
