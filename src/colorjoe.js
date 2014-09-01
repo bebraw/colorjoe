@@ -145,6 +145,11 @@ function setup(o) {
 
   var ob = {
     e: e,
+    done: function() {
+      done();
+
+      return this;
+    },
     update: function(skip) {
       changed(skip);
 

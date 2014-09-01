@@ -383,10 +383,15 @@ function fields(p, joe, o) {
     n = n.toLowerCase();
 
     var e = utils.labelInput('color ' + n, n, c, inputLen);
+    e.input.onblur = done;
     e.input.onkeyup = update;
 
     return {name: n, e: e};
   });
+
+  function done() {
+    joe.done();
+  }
 
   function update() {
     var col = [cs];
@@ -413,9 +418,14 @@ function alpha(p, joe) {
     'class': 'oned alpha',
     cbs: {
       begin: change,
-      change: change
+      change: change,
+      done: done
     }
   });
+
+  function done() {
+    joe.done();
+  }
 
   function change(p) {
     var val = utils.clamp(p.y, 0, 1);
@@ -446,6 +456,7 @@ function hex(p, joe, o) {
 
   e.input.onblur = function(elem) {
     joe.set(elem.target.value);
+    joe.done();
   };
 
   return {
@@ -631,6 +642,11 @@ function setup(o) {
 
   var ob = {
     e: e,
+    done: function() {
+      done();
+
+      return this;
+    },
     update: function(skip) {
       changed(skip);
 
