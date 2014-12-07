@@ -10,7 +10,7 @@
     }
 }(this, function(onecolor) {
 /*! colorjoe - v0.9.6 - Juho Vepsalainen <bebraw@gmail.com> - MIT
-https://bebraw.github.com/colorjoe - 2014-09-01 */
+https://bebraw.github.com/colorjoe - 2014-12-06 */
 /*! dragjs - v0.4.0 - Juho Vepsalainen <bebraw@gmail.com> - MIT
 https://bebraw.github.com/dragjs - 2013-07-17 */
 var drag = (function() {
@@ -426,7 +426,7 @@ function alpha(p, joe) {
     cbs: {
       begin: change,
       change: change,
-      done: done
+      end: done
     }
   });
 

@@ -71,7 +71,7 @@ function alpha(p, joe) {
     cbs: {
       begin: change,
       change: change,
-      done: done
+      end: done
     }
   });
 
