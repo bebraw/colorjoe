@@ -120,6 +120,7 @@ work.
 * [Artem Zakharchenko](https://github.com/blackrabbit99) - Fix issue with initial color when it was set black on RGB (#20).
 * [Tyler Waters](https://github.com/tswaters) - Improve CSS to work with IE better. Ensure `done` callback is fired for extras. Add validation to extra fields to avoid exceptions from one-color.
 * [Elsa Balderrama](https://github.com/Lexas) - Trigger `done` correctly for alpha slider.
+* [Jesse Keane](https://github.com/jarofghosts) - Add `onecolor` to `package.json` so that colorjoe works with Browserify
 
 ## Hacking
 
@@ -128,4 +129,3 @@ Download the dependencies using `npm` (npm install) and then use [grunt](http://
 ## License
 
 colorjoe is available under MIT. See [LICENSE](https://github.com/bebraw/colorjoe/blob/master/LICENSE) for more details.
-
