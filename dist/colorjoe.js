@@ -9,7 +9,7 @@
         root.colorjoe = factory(root.one.color);
     }
 }(this, function(onecolor) {
-/*! colorjoe - v0.9.8 - Juho Vepsalainen <bebraw@gmail.com> - MIT
+/*! colorjoe - v1.0.0 - Juho Vepsalainen <bebraw@gmail.com> - MIT
 https://bebraw.github.com/colorjoe - 2015-07-22 */
 /*! dragjs - v0.6.0 - Juho Vepsalainen <bebraw@gmail.com> - MIT
 https://bebraw.github.com/dragjs - 2015-07-22 */
