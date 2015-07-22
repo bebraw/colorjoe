@@ -10,9 +10,9 @@
     }
 }(this, function(onecolor) {
 /*! colorjoe - v0.9.8 - Juho Vepsalainen <bebraw@gmail.com> - MIT
-https://bebraw.github.com/colorjoe - 2015-01-09 */
-/*! dragjs - v0.4.0 - Juho Vepsalainen <bebraw@gmail.com> - MIT
-https://bebraw.github.com/dragjs - 2013-07-17 */
+https://bebraw.github.com/colorjoe - 2015-07-22 */
+/*! dragjs - v0.6.0 - Juho Vepsalainen <bebraw@gmail.com> - MIT
+https://bebraw.github.com/dragjs - 2015-07-22 */
 var drag = (function() {
     function drag(elem, cbs) {
         if(!elem) {
@@ -20,8 +20,8 @@ var drag = (function() {
             return;
         }
 
-        if(isTouch()) dragTemplate(elem, cbs, 'touchstart', 'touchmove', 'touchend');
-        else dragTemplate(elem, cbs, 'mousedown', 'mousemove', 'mouseup');
+        dragTemplate(elem, cbs, 'touchstart', 'touchmove', 'touchend');
+        dragTemplate(elem, cbs, 'mousedown', 'mousemove', 'mouseup');
     }
 
     function xyslider(o) {
@@ -218,28 +218,30 @@ var drag = (function() {
 
     // http://javascript.about.com/library/blmousepos.htm
     function cursorX(elem, evt) {
+        var evtPos = evt.touches ? evt.touches[evt.touches.length -1] : evt;
         if(isFixed(elem)) {
             var bodyLeft = parseInt(getStyle(document.body, 'marginLeft'), 10) -
                 calc(elem, 'scrollLeft') + window.pageXOffset +
                 elem.style.marginLeft;
 
-            return evt.clientX - bodyLeft;
+            return evtPos.clientX - bodyLeft;
         }
-        if(evt.pageX) return evt.pageX;
-        else if(evt.clientX)
-            return evt.clientX + document.body.scrollLeft;
+        if(evtPos.pageX) return evtPos.pageX;
+        else if(evtPos.clientX)
+            return evtPos.clientX + document.body.scrollLeft;
     }
     function cursorY(elem, evt) {
+        var evtPos = evt.touches ? evt.touches[evt.touches.length -1] : evt;
         if(isFixed(elem)) {
             var bodyTop = parseInt(getStyle(document.body, 'marginTop'), 10) -
                 calc(elem, 'scrollTop') + window.pageYOffset +
                 elem.style.marginTop;
 
-            return evt.clientY - bodyTop;
+            return evtPos.clientY - bodyTop;
         }
-        if(evt.pageY) return evt.pageY;
-        else if(evt.clientY)
-            return evt.clientY + document.body.scrollTop;
+        if(evtPos.pageY) return evtPos.pageY;
+        else if(evtPos.clientY)
+            return evtPos.clientY + document.body.scrollTop;
     }
 
     function calc(element, prop) {
