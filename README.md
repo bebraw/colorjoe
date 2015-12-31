@@ -108,6 +108,12 @@ colorjoe.registerExtra('text', function(p, joe, o) {
 Now you can simply pass your `text` extra amongst the others and it will just
 work.
 
+## Sites Using colorjoe
+
+* [HTML Color Codes](http://htmlcolorcodes.com/)
+
+PRs are welcome!
+
 ## Contributors
 
 * [Juho Vepsäläinen](https://github.com/bebraw) - Core
