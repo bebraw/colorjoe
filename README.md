@@ -2,7 +2,7 @@
 
 colorjoe was somewhat inspired by
 [ColorJack](http://www.dynamicdrive.com/dynamicindex11/colorjack/index.htm) and
-[RightJS Colorpicker](http://rightjs.org/ui/colorpicker). Unlike those it
+[RightJS Colorpicker](http://rightjs.org/ui/colorpicker/demo). Unlike those it
 actually scales pretty well. Essentially this means that you'll be able to
 define its actual dimensions and layout using a bit of CSS. This way the widget
 fits well responsive layouts.
