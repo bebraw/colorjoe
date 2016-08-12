@@ -128,6 +128,7 @@ PRs are welcome!
 * [Tyler Waters](https://github.com/tswaters) - Improve CSS to work with IE better. Ensure `done` callback is fired for extras. Add validation to extra fields to avoid exceptions from one-color.
 * [Elsa Balderrama](https://github.com/Lexas) - Trigger `done` correctly for alpha slider.
 * [Jesse Keane](https://github.com/jarofghosts) - Add `onecolor` to `package.json` so that colorjoe works with Browserify
+* [Sam Potts](https://github.com/SamPotts) - Improve formatting, generate random ids for labels, IE9+ support.
 
 ## Hacking
 
