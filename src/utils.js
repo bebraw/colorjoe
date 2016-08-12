@@ -19,31 +19,56 @@ function partial(fn) {
 }
 
 function labelInput(klass, n, p, maxLen) {
+    var id = "colorPickerInput" + Math.floor(Math.random() * 1001);
     var d = div(klass, p);
-    var l = label(n, d);
-    var i = input('text', d, maxLen);
+    var l = label(n, d, id);
+    var i = input('text', d, maxLen, id);
 
-    return {label: l, input: i};
+    return {
+        label: l, 
+        input: i
+    };
 }
 
-function label(c, p) {
+function label(c, p, id) {
     var elem = e('label', '', p);
     elem.innerHTML = c;
 
+    if (id) {
+        elem.setAttribute('for', id);
+    }
+
     return elem;
 }
 
-function input(t, p, maxLen) {
+function input(t, p, maxLen, id) {
     var elem = e('input', '', p);
     elem.type = t;
-    if(maxLen) elem.maxLength = maxLen;
+
+    if(maxLen) { 
+        elem.maxLength = maxLen;
+    }
+
+    if (id) {
+        elem.setAttribute('id', id);
+    }
+
+    if(maxLen) {
+        elem.maxLength = maxLen;
+    }
 
     return elem;
 }
 
-function X(p, a) {p.style.left = clamp(a * 100, 0, 100) + '%';}
-function Y(p, a) {p.style.top = clamp(a * 100, 0, 100) + '%';}
-function BG(e, c) {e.style.background = c;}
+function X(p, a) {
+    p.style.left = clamp(a * 100, 0, 100) + '%';
+}
+function Y(p, a) {
+    p.style.top = clamp(a * 100, 0, 100) + '%';
+}
+function BG(e, c) {
+    e.style.background = c;
+}
 
 function clamp(a, minValue, maxValue) {
     return Math.min(Math.max(a, minValue), maxValue);
@@ -58,4 +83,4 @@ var utils = {
     X: X,
     Y: Y,
     BG: BG
-};
+};  
