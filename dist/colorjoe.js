@@ -9,10 +9,10 @@
         root.colorjoe = factory(root.one.color);
     }
 }(this, function(onecolor) {
-/*! colorjoe - v1.0.3 - Juho Vepsalainen <bebraw@gmail.com> - MIT
+/*! colorjoe - v2.0.0 - Juho Vepsalainen <bebraw@gmail.com> - MIT
 https://bebraw.github.com/colorjoe - 2016-08-12 */
-/*! dragjs - v0.6.0 - Juho Vepsalainen <bebraw@gmail.com> - MIT
-https://bebraw.github.com/dragjs - 2015-07-22 */
+/*! dragjs - v0.7.0 - Juho Vepsalainen <bebraw@gmail.com> - MIT
+https://bebraw.github.com/dragjs - 2016-08-12 */
 var drag = (function() {
     function drag(elem, cbs) {
         if(!elem) {
@@ -62,7 +62,9 @@ var drag = (function() {
     function attachPointer(cbs, pointer) {
         var ret = {};
 
-        for(var n in cbs) ret[n] = wrap(cbs[n]);
+        for(var n in cbs) {
+          ret[n] = wrap(cbs[n]);
+        }
 
         function wrap(fn) {
             return function(p) {
@@ -81,15 +83,12 @@ var drag = (function() {
 
     function e(type, klass, p) {
         var elem = document.createElement(type);
-        if(klass) elem.className = klass;
+        if(klass) {
+          elem.className = klass;
+        }
         p.appendChild(elem);
 
         return elem;
-    }
-
-    // http://stackoverflow.com/questions/4817029/whats-the-best-way-to-detect-a-touch-screen-device-using-javascript
-    function isTouch() {
-        return typeof(window.ontouchstart) != 'undefined';
     }
 
     function dragTemplate(elem, cbs, down, move, up) {
@@ -122,17 +121,11 @@ var drag = (function() {
     }
 
     function on(elem, evt, handler) {
-        if(elem.addEventListener)
-            elem.addEventListener(evt, handler, false);
-        else if(elem.attachEvent)
-            elem.attachEvent('on' + evt, handler);
+        elem.addEventListener(evt, handler, false);
     }
 
     function off(elem, evt, handler) {
-        if(elem.removeEventListener)
-            elem.removeEventListener(evt, handler, false);
-        else if(elem.detachEvent)
-            elem.detachEvent('on' + evt, handler);
+      elem.removeEventListener(evt, handler, false);
     }
 
     function getCbs(cbs) {
@@ -162,7 +155,6 @@ var drag = (function() {
     }
 
     // TODO: set draggable class (handy for fx)
-
     function style(e, prop, value) {
         e.style[prop] = value;
     }
@@ -203,96 +195,24 @@ var drag = (function() {
 
     // http://www.quirksmode.org/js/findpos.html
     function findPos(e) {
-        var x = 0;
-        var y = 0;
+        var r = e.getBoundingClientRect();
 
-        if(e.offsetParent) {
-            do {
-                x += e.offsetLeft;
-                y += e.offsetTop;
-            } while (e = e.offsetParent);
-        }
-
-        return {x: x, y: y};
+        return {
+            x: r.left,
+            y: r.top
+        };
     }
 
     // http://javascript.about.com/library/blmousepos.htm
     function cursorX(elem, evt) {
         var evtPos = evt.touches ? evt.touches[evt.touches.length -1] : evt;
-        if(isFixed(elem)) {
-            var bodyLeft = parseInt(getStyle(document.body, 'marginLeft'), 10) -
-                calc(elem, 'scrollLeft') + window.pageXOffset +
-                elem.style.marginLeft;
-
-            return evtPos.clientX - bodyLeft;
-        }
-        if(evtPos.pageX) return evtPos.pageX;
-        else if(evtPos.clientX)
-            return evtPos.clientX + document.body.scrollLeft;
+        return evtPos.clientX;
     }
     function cursorY(elem, evt) {
         var evtPos = evt.touches ? evt.touches[evt.touches.length -1] : evt;
-        if(isFixed(elem)) {
-            var bodyTop = parseInt(getStyle(document.body, 'marginTop'), 10) -
-                calc(elem, 'scrollTop') + window.pageYOffset +
-                elem.style.marginTop;
-
-            return evtPos.clientY - bodyTop;
-        }
-        if(evtPos.pageY) return evtPos.pageY;
-        else if(evtPos.clientY)
-            return evtPos.clientY + document.body.scrollTop;
-    }
-
-    function calc(element, prop) {
-        var ret = 0;
-
-        while (element.nodeName != "HTML") {
-            ret += element[prop];
-            element = element.parentNode;
-        }
-
-        return ret;
-    }
-
-    // http://www.velocityreviews.com/forums/t942580-mouse-position-in-both-fixed-and-relative-positioning.html
-    function isFixed(element) {
-        // While not at the top of the document tree, or not fixed, keep
-        // searching upwards.
-        while (element.nodeName != "HTML" && usedStyle(element,
-                "position") != "fixed")
-            element = element.parentNode;
-            if(element.nodeName == "HTML") return false;
-            else return true;
-    }
-
-    // http://www.javascriptkit.com/dhtmltutors/dhtmlcascade4.shtml
-    function getStyle(el, cssprop){
-        if (el.currentStyle) // IE
-            return el.currentStyle[cssprop];
-
-        if(document.defaultView && document.defaultView.getComputedStyle)
-            return document.defaultView.getComputedStyle(el, "")[cssprop];
-
-        //try and get inline style
-        return el.style[cssprop];
-    }
-
-    // Used style is to get around browsers' different methods of getting
-    // the currently used (e.g. inline, class, etc) style for an element
-    function usedStyle(element, property) {
-        var s;
-
-        // getComputedStyle is the standard way but some ie versions don't
-        // support it
-        if(window.getComputedStyle)
-            s = window.getComputedStyle(element, null);
-        else s = element.currentStyle;
-
-        return s[property];
+        return evtPos.clientY;
     }
 })();
-
 var div = partial(e, 'div');
 
 function e(type, klass, p) {
