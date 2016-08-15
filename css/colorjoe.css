@@ -94,8 +94,7 @@
     position: absolute;
 }
 .colorPicker .twod .pointer .shape1 {
-    margin-left: -7px;
-    margin-top: -7px;
+    transform: translate(-50%, -50%);
     width: 10px;
     height: 10px;
     border: 2px solid black;
@@ -103,8 +102,7 @@
     border-radius: 5px;
 }
 .colorPicker .twod .pointer .shape2 {
-    margin-left: -6px;
-    margin-top: -6px;
+    transform: translate(-50%, -50%);
     width: 8px;
     height: 8px;
     border: 2px solid white;
