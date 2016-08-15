@@ -94,6 +94,8 @@
     position: absolute;
 }
 .colorPicker .twod .pointer .shape1 {
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     width: 10px;
     height: 10px;
@@ -102,6 +104,8 @@
     border-radius: 5px;
 }
 .colorPicker .twod .pointer .shape2 {
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     width: 8px;
     height: 8px;
