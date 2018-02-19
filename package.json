@@ -5,14 +5,15 @@
   "version": "2.0.1",
   "dependencies": {
     "dragjs": "^0.7.0",
-    "onecolor": "^2.5.0"
+    "onecolor": "^3.0.5"
   },
   "devDependencies": {
-    "grunt": "0.4.1",
-    "grunt-contrib-watch": "0.4.4",
-    "grunt-contrib-uglify": "0.2.2",
-    "grunt-contrib-concat": "0.3.0",
-    "grunt-umd": "1.1.0"
+    "grunt": "1.0.2",
+    "grunt-cli": "^1.2.0",
+    "grunt-contrib-concat": "1.0.1",
+    "grunt-contrib-uglify": "3.3.0",
+    "grunt-contrib-watch": "1.0.0",
+    "grunt-umd": "3.0.0"
   },
   "repository": {
     "type": "git",
