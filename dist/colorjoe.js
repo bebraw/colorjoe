@@ -2,7 +2,7 @@
   if (root === undefined && window !== undefined) root = window;
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module unless amdModuleId is set
-    define(["onecolor"], function (a0) {
+    define(["ONECOLOR"], function (a0) {
       return (root['colorjoe'] = factory(a0));
     });
   } else if (typeof module === 'object' && module.exports) {
@@ -13,10 +13,10 @@
   } else {
     root['colorjoe'] = factory(root["one.color"]);
   }
-}(this, function (onecolor) {
+}(this, function (ONECOLOR) {
 
 /*! colorjoe - v3.0.0 - Juho Vepsalainen <bebraw@gmail.com> - MIT
-https://bebraw.github.com/colorjoe - 2018-02-19 */
+https://bebraw.github.com/colorjoe - 2018-02-22 */
 /*! dragjs - v0.7.0 - Juho Vepsalainen <bebraw@gmail.com> - MIT
 https://bebraw.github.com/dragjs - 2016-08-12 */
 var drag = (function() {
