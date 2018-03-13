@@ -15,8 +15,8 @@
   }
 }(this, function (ONECOLOR) {
 
-/*! colorjoe - v3.0.1 - Juho Vepsalainen <bebraw@gmail.com> - MIT
-https://bebraw.github.com/colorjoe - 2018-02-22 */
+/*! colorjoe - v3.0.2 - Juho Vepsalainen <bebraw@gmail.com> - MIT
+https://bebraw.github.com/colorjoe - 2018-03-13 */
 /*! dragjs - v0.7.0 - Juho Vepsalainen <bebraw@gmail.com> - MIT
 https://bebraw.github.com/dragjs - 2016-08-12 */
 var drag = (function() {
