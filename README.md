@@ -111,6 +111,7 @@ work.
 ## Sites Using colorjoe
 
 * [HTML Color Codes](http://htmlcolorcodes.com/)
+* [CSS Gradient](https://cssgradient.io/)
 * [HTML Colors](https://htmlcolors.com/)
 * [Gradnts](https://gradnts.co/)
 
