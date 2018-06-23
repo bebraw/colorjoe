@@ -1,3 +1,6 @@
+var drag = require('dragjs');
+var utils = require('./utils');
+
 function currentColor(p) {
     var e1 = utils.div('currentColorContainer', p);
     var e = utils.div('currentColor', e1);
@@ -149,7 +152,7 @@ function pad(a, n, c) {
     return ret;
 }
 
-var extras = {
+module.exports = {
     currentColor: currentColor,
     fields: fields,
     hex: hex,

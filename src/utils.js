@@ -74,7 +74,7 @@ function clamp(a, minValue, maxValue) {
     return Math.min(Math.max(a, minValue), maxValue);
 }
 
-var utils = {
+module.exports = {
     clamp: clamp,
     e: e,
     div: div,
@@ -83,4 +83,4 @@ var utils = {
     X: X,
     Y: Y,
     BG: BG
-};  
+};
