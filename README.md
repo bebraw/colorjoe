@@ -1,5 +1,5 @@
 <h1 align=center>
-<img src="logo.png" width=30%>
+<img src="media/logo.png" width=30%>
 </h1>
 
 # colorjoe - The Scaleable Color Picker
