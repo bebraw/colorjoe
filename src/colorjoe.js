@@ -1,5 +1,5 @@
 var drag = require('dragjs');
-var ONECOLOR = require('onecolor/one-color'); // Use the minimal build without color names
+var ONECOLOR = require('onecolor/one-color-all'); // Use the all build with cmyk and everything
 var utils = require('./utils');
 var extras = require('./extras');
 
@@ -277,7 +277,7 @@ function setupExtras(p, joe, extras) {
             name = e;
             params = {};
         }
-        var extra = name in colorjoe._extras ? colorjoe._extras[name] : null;
+        var extra = name in colorjoe.extras ? colorjoe.extras[name] : null;
 
         if (extra) {
             cbs = extra(c, extraProxy(joe, name + i), params);
