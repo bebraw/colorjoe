@@ -135,6 +135,7 @@ PRs are welcome!
 * [Elsa Balderrama](https://github.com/Lexas) - Trigger `done` correctly for alpha slider.
 * [Jesse Keane](https://github.com/jarofghosts) - Add `onecolor` to `package.json` so that colorjoe works with Browserify
 * [Sam Potts](https://github.com/SamPotts) - Improve formatting, generate random ids for labels, IE9+ support.
+* [Mirza Zulfan](https://github.com/mirzazulfan) - Logo. #48, #49
 
 ## Hacking
 
