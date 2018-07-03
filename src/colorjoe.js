@@ -1,3 +1,8 @@
+var drag = require('dragjs');
+var ONECOLOR = require('onecolor/one-color'); // Use the minimal build without color names
+var utils = require('./utils');
+var extras = require('./extras');
+
 var colorjoe = function(cbs) {
     if (!all(isFunction, [cbs.init, cbs.xy, cbs.z])) {
         return console.warn("colorjoe: missing cb");
@@ -323,3 +328,5 @@ function isFunction(input) {
 function id(a) {
     return a;
 }
+
+module.exports = colorjoe;
