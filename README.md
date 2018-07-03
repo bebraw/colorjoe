@@ -16,7 +16,11 @@ whatnot) thanks to the simple API it provides.
 
 ## Installation
 
-Add prepackaged `dist/colorjoe.js` and `css/colorjoe.css` to your page or use AMD to load
+```bash
+npm i colorjoe
+```
+
+If you prefer a standalone dist, add prepackaged `dist/colorjoe.js` and `css/colorjoe.css` to your page or use AMD to load
 the dependencies from `src/`.
 
 ## Usage
@@ -132,7 +136,10 @@ PRs are welcome!
 
 ## Hacking
 
-Download the dependencies using `npm` (npm install) and then use [grunt](http://gruntjs.com/) to build prepackaged files in `dist/`.
+1. `npm i`
+2. `npm start`
+3. `serve` (or similar command) at project root
+
 
 ## License
 
