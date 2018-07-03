@@ -22,13 +22,13 @@ the dependencies from `src/`.
 ## Usage
 
 ```javascript
-var joe = colorjoe.rgb(element_id_or_dom_object, initial_color_value, extras);
+const joe = colorjoe.rgb(element_id_or_dom_object, initial_color_value, extras);
 ```
 
 or
 
 ```javascript
-var joe = colorjoe.hsl(element_id_or_dom_object, initial_color_value, extras);
+const joe = colorjoe.hsl(element_id_or_dom_object, initial_color_value, extras);
 ```
 
 ### Event Handling
@@ -39,13 +39,8 @@ The returned joe object is an event emitter style object with `change` and
 
 
 ```javascript
-joe.on("change", function(color) {
-    console.log("Selecting " + color.css());
-});
-
-joe.on("done", function(color) {
-    console.log("Selected " + color.css());
-});
+joe.on("change", color => console.log("Selecting " + color.css()));
+joe.on("done", color => console.log("Selected " + color.css()));
 ```
 
 The color object is from [one.color](https://github.com/One-com/one-color).
@@ -66,7 +61,7 @@ In order to make it easier to customize a picker based on your needs, colorjoe
 provides a few extras. The following example shows how to use them:
 
 ```javascript
-var joe = colorjoe.hsl('hslPicker', 'red', [
+const joe = colorjoe.hsl('hslPicker', 'red', [
     'currentColor',
     'alpha',
     ['fields', {space: 'HSL', limit: 255, fix: 0},
@@ -93,7 +88,7 @@ It is possible to implement your custom extras without having to hack the core
 code. This can be done as follows:
 
 ```javascript
-colorjoe.registerExtra('text', function(p, joe, o) {
+colorjoe.registerExtra('text', (p, joe, o) => {
     // attach new elements to p element here (as children that is)
     // o is optional and will contain any parameters you might have
     // passed to the extra using the array syntax
@@ -101,8 +96,8 @@ colorjoe.registerExtra('text', function(p, joe, o) {
     // optional return. these are triggered by colorjoe
     // use this way instead of joe.on
     return {
-        change: function(col) {},
-        done: function(col) {}
+        change(col) {},
+        done(col) {}
     };
 })
 ```
