@@ -1,5 +1,5 @@
 /*! colorjoe - v3.0.2 - Juho Vepsalainen <bebraw@gmail.com> - MIT
-https://bebraw.github.com/colorjoe - 2018-06-24 */
+https://bebraw.github.com/colorjoe - 2018-07-03 */
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
@@ -542,14 +542,14 @@ https://bebraw.github.com/colorjoe - 2018-06-24 */
 	    },
 	});
 
-	colorjoe._extras = {};
+	colorjoe.extras = {};
 
 	colorjoe.registerExtra = function(name, fn) {
-	    if (name in colorjoe._extras) {
+	    if (name in colorjoe.extras) {
 	        console.warn('Extra "' + name + '"has been registered already!');
 	    }
 
-	    colorjoe._extras[name] = fn;
+	    colorjoe.extras[name] = fn;
 	};
 
 	for (var k in extras) {

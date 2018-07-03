@@ -65,14 +65,14 @@ colorjoe.hsl = colorjoe({
     },
 });
 
-colorjoe._extras = {};
+colorjoe.extras = {};
 
 colorjoe.registerExtra = function(name, fn) {
-    if (name in colorjoe._extras) {
+    if (name in colorjoe.extras) {
         console.warn('Extra "' + name + '"has been registered already!');
     }
 
-    colorjoe._extras[name] = fn;
+    colorjoe.extras[name] = fn;
 };
 
 for (var k in extras) {
