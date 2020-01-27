@@ -1,5 +1,5 @@
-/*! colorjoe - v4.1.0 - Juho Vepsalainen <bebraw@gmail.com> - MIT
-https://bebraw.github.com/colorjoe - 2018-07-03 */
+/*! colorjoe - v4.1.1 - Juho Vepsalainen <bebraw@gmail.com> - MIT
+https://bebraw.github.com/colorjoe - 2020-01-27 */
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
@@ -711,10 +711,10 @@ https://bebraw.github.com/colorjoe - 2018-07-03 */
 	        },
 	        removeAllListeners: function(evt) {
 	            if (evt) {
-	                delete listeners[evt];
+	                listeners[evt] = [];
 	            } else {
 	                for (var key in listeners) {
-	                    delete listeners[key];
+	                    listeners[key] = [];
 	                }
 	            }
 
