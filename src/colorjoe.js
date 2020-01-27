@@ -221,10 +221,10 @@ function setup(o) {
         },
         removeAllListeners: function(evt) {
             if (evt) {
-                delete listeners[evt];
+                listeners[evt] = [];
             } else {
                 for (var key in listeners) {
-                    delete listeners[key];
+                    listeners[key] = [];
                 }
             }
 
