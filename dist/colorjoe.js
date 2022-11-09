@@ -1,4 +1,4 @@
-/*! colorjoe - v4.1.1 - Juho Vepsalainen <bebraw@gmail.com> - MIT
+/*! colorjoe - v4.2.0 - Juho Vepsalainen <bebraw@gmail.com> - MIT
 https://bebraw.github.com/colorjoe - 2022-11-09 */
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
