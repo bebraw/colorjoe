@@ -54,7 +54,7 @@ colorjoe.hsl = colorjoe({
     xy: function(col, p, xy, z) {
         utils.X(xy.pointer, p.x);
         utils.Y(xy.pointer, p.y);
-        RGB_BG(z.background, p.x);
+        utils.BG(z.background, col.css()); // #55
 
         return col.hue(p.x).saturation(1 - p.y);
     },

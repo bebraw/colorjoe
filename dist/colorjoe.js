@@ -1,5 +1,5 @@
 /*! colorjoe - v4.1.1 - Juho Vepsalainen <bebraw@gmail.com> - MIT
-https://bebraw.github.com/colorjoe - 2020-01-27 */
+https://bebraw.github.com/colorjoe - 2022-11-09 */
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
@@ -544,7 +544,7 @@ https://bebraw.github.com/colorjoe - 2020-01-27 */
 	    xy: function(col, p, xy, z) {
 	        utils.X(xy.pointer, p.x);
 	        utils.Y(xy.pointer, p.y);
-	        RGB_BG(z.background, p.x);
+	        utils.BG(z.background, col.css()); // #55
 
 	        return col.hue(p.x).saturation(1 - p.y);
 	    },
